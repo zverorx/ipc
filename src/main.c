@@ -1,8 +1,8 @@
-/*
- * IP calculator, designed for IP analysis
- * Autor: Zveror
- *
- * */
+/**
+ * @file main.c
+ * @brief IP calculator, designed for IP analysis
+ * @autor: zverorx
+ */
 
 #include <stdio.h>
 #include "functions.h"
