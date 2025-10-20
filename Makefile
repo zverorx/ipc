@@ -23,10 +23,10 @@ OBJDIR = obj
 BINDIR = bin
 
 # List of header files
-HEADERS = $(INCDIR)/functions.h
+HEADERS = $(INCDIR)/ipc.h $(INCDIR)/macros.h
 
 # List of source files
-SOURCES = $(SRCDIR)/main.c $(SRCDIR)/functions.c
+SOURCES = $(SRCDIR)/main.c $(SRCDIR)/ipc.c
 
 # Object files generated from source files
 OBJECTS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SOURCES))
