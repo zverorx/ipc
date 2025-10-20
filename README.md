@@ -1,6 +1,8 @@
 # ipc
+
 IP calculator, designed for IP analysis.
 Specifies the netmask, wildcards, network, broadcast, minimum and maximum hosts, and the number of hosts by IP/BITMASK format string
+
 ---
 ## Prerequisites
 Check for the following programs:
@@ -17,12 +19,7 @@ git clone https://github.com/zverorx/ipc.git
 ## Compilation and installation
  To install the program, run the following commands in the terminal window:
 ```bash
-make
-sudo make install
-```
-To change the installation path, use the CONFIG_PREFIX variable:
-```bash
-sudo make CONFIG_PREFIX=/home/user install
+make && sudo make install
 ```
 
 To find out more about Makefile features, run 
@@ -56,7 +53,7 @@ To remove, use the command:
 sudo make uninstall
 ```
 ## License
-This project is licensed under the GPLv3 license. See the LICENSE file for more details.
+This project is licensed under the GPLv3. See the LICENSE file for more details.
 
 ## Feedback
-To contact the developer, you can contact by email zveror1806@gmail.com
+You can contact the developer at: zveror1806@gmail.com
