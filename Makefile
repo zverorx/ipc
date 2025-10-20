@@ -5,7 +5,7 @@ CC ?= gcc
 BUILD ?= release
 
 # Installation directory (default: /usr/local/bin/)
-CONFIG_PREFIX ?= /usr/local/bin/
+PREFIX ?= /usr/local/bin/
 
 # Name of the final executable
 TARGET = ipc
@@ -16,11 +16,20 @@ SRCDIR = src
 # Include directory
 INCDIR = include
 
+# Objects directory
+OBJDIR = obj
+
+# Binary directory
+BINDIR = bin
+
+# List of header files
+HEADERS = $(INCDIR)/functions.h
+
 # List of source files
 SOURCES = $(SRCDIR)/main.c $(SRCDIR)/functions.c
 
 # Object files generated from source files
-OBJECTS = $(SOURCES:.c=.o)
+OBJECTS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SOURCES))
 
 # Compiler flags
 CFLAGS = -Wall -std=c99
@@ -42,35 +51,35 @@ all: $(TARGET)
 
 # Link object files into the final executable
 $(TARGET): $(OBJECTS)
-	$(CC) $(CFLAGS) $^ -o $@
+	mkdir -p $(BINDIR)/
+	$(CC) $(CFLAGS) $^ -o $(BINDIR)/$@
 
 # Compile .c files into .o files
-$(SRCDIR)/%.o: $(SRCDIR)/%.c
+$(OBJDIR)/%.o: $(SRCDIR)/%.c $(HEADERS)
+	mkdir -p $(OBJDIR)/
 	@echo "Compiling $<..."
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
 
 # Remove object files
 clean:
-	rm -f $(SRCDIR)/*.o
+	rm -fr $(OBJDIR)/
 
 # Remove all generated files (objects and executable)
 distclean:
-	rm -f $(SRCDIR)/*.o $(TARGET)
+	rm -fr $(BINDIR)/ $(OBJDIR)/
 
 # Install the executable to the target directory
 install:
-	install -d $(CONFIG_PREFIX)
-	install -m 755 ./$(TARGET) $(CONFIG_PREFIX)
-	@echo "$(TARGET) installed to $(CONFIG_PREFIX)"
+	install -d $(PREFIX)
+	install -m 755 ./$(BINDIR)/$(TARGET) $(PREFIX)
 
 # Remove the installed executable
 uninstall:
-	rm -f $(CONFIG_PREFIX)$(TARGET)
-	@echo "$(TARGET) removed from $(CONFIG_PREFIX)"
+	rm -f $(PREFIX)/$(TARGET)
 
 # Show help message
 help:
-	@echo "Available targets:"
+	@echo "Hints:"
 	@echo ""
 	@echo "make - Build the program"
 	@echo "make BUILD=debug - Build with debug flags"
@@ -78,8 +87,10 @@ help:
 	@echo ""
 	@echo "make clean - Remove all temporary files"
 	@echo "make distclean - Remove all generated files"
-	@echo "make install - Install the executable file to $(CONFIG_PREFIX)"
+	@echo "make install - Install the executable file to $(PREFIX)"
 	@echo "make uninstall - Remove the installed executable file"
+	@echo ""
+	@echo "To change the installation and removal path, use PREFIX="
 
 # Declare phony targets (not real files)
 .PHONY: all clean distclean install uninstall help
