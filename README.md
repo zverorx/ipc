@@ -6,18 +6,20 @@ Specifies the netmask, wildcards, network, broadcast, minimum and maximum hosts,
 ---
 ## Prerequisites
 Check for the following programs:
-* gcc
-* make
-* git
+* `gcc`
+* `make`
+* `curl`
+* `unzip`
 
 ## Receiving the project
 You can get the source code by cloning the repository using the command:
-```bash
-git clone https://github.com/zverorx/ipc.git
+```
+curl -L -o ipc-v1.0.0.zip https://github.com/zverorx/ipc/archive/refs/tags/v1.0.0.zip
+unzip ipc-v1.0.0.zip
 ```
 
 ## Compilation and installation
- To install the program, run the following commands in the terminal window:
+ Go to the source directory (see Receiving the project), and run the following commands:
 ```bash
 make && sudo make install
 ```
