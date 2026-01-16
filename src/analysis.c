@@ -24,22 +24,56 @@
 
 #include "ipv4_t.h"
 #include "fill_ipv4.h"
-#include "macros.h"
 #include "analysis.h"
 
 int analysis_start(ipv4_t *ip, char *ip_str)
 {
 	assign_flags_ip_v4(ip);
-	ASSIGN_ADDR(ip_str, ip, EXIT_FAILURE);
-	ASSIGN_BITMASK(ip_str, ip, EXIT_FAILURE);
-	ASSIGN_FIELD(netmask, ip, EXIT_FAILURE);
-	ASSIGN_FIELD(wildcard, ip, EXIT_FAILURE);
-	ASSIGN_FIELD(network, ip, EXIT_FAILURE);
-	ASSIGN_BROADCAST(ip, EXIT_FAILURE);
-	ASSIGN_HOSTX(hostmin, ip, EXIT_FAILURE);
-	ASSIGN_HOSTX(hostmax, ip, EXIT_FAILURE);
-	ASSIGN_QT_HOSTS(ip, EXIT_FAILURE);
+
+	if (!assign_addr(ip_str, ip)) { return EXIT_FAILURE; }
+	ip->addr_set = 1;
+
+	if(!assign_bitmask(ip_str, ip)) { return EXIT_FAILURE; }
+	else if(ip->bitmask == BITS_IN_IP) {
+		ip->is_host_route = 1;
+		ip->bitmask_set = 1;
+	}
+	else if(ip->bitmask == BITS_IN_IP - 1) {
+		ip->is_point_to_point = 1;
+		ip->bitmask_set = 1;
+	}
+	else {
+		ip->is_host_route = 0;
+		ip->is_point_to_point = 0;
+		ip->bitmask_set = 1;
+	}
+
+	if(!assign_netmask(ip)) { return EXIT_FAILURE; }
+	ip->netmask_set = 1;
+
+	if(!assign_wildcard(ip)) { return EXIT_FAILURE; }
+	ip->wildcard_set = 1;
+
+	if(!assign_network(ip)) { return EXIT_FAILURE; }
+	ip->network_set = 1;
+
+	if(!assign_broadcast(ip) && !ip->is_point_to_point) {
+		return EXIT_FAILURE;
+	}
+	ip->broadcast_set = 1;
+
+	if(!assign_hostmin(ip) && !ip->is_host_route) {
+		return EXIT_FAILURE;
+	}
+
+	if(!assign_hostmax(ip) && !ip->is_host_route) {
+		return EXIT_FAILURE;
+	}
+
+	if(!assign_qt_hosts(ip)) { return EXIT_FAILURE; }
+
 	print_ip_v4(ip);
+
     return EXIT_SUCCESS;
 }
 
