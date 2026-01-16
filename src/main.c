@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 	handle_error:
 		free(ip_str);
 		free(ip);
-		fputs("Usage: ipc [-a|-s] <ip/bitmask>\n", stderr);
+		fputs("Usage: ipc <-a|-s> <ip/bitmask>\n", stderr);
 		return EXIT_FAILURE;
 }
 
