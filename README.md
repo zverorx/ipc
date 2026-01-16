@@ -13,19 +13,17 @@ Check for the following programs:
 
 ## Receiving the project
 
-You can get the source code by cloning the repository using the command:
-
 ```bash
-curl -L -o ipc-v1.0.0.zip https://github.com/zverorx/ipc/archive/refs/tags/v1.zip
+curl -L -o ipc.zip https://github.com/zverorx/ipc/archive/refs/tags/v1.zip
 ```
 
 ```bash
-unzip ipc-v1.0.0.zip
+unzip ipc.zip
 ```
 
 ## Compilation and installation
 
-Go to the source directory (see Receiving the project), and run the following commands:
+Go to the source directory, and run the following commands:
 
 ```bash
 make && sudo make install
@@ -60,14 +58,6 @@ Broadcast      192.168.001.255     11000000.10101000.00000001.11111111     c0.a8
 Hostmin        192.168.001.001     11000000.10101000.00000001.00000001     c0.a8.01.01     
 Hostmax        192.168.001.254     11000000.10101000.00000001.11111110     c0.a8.01.fe     
 Hosts          254
-```
-
-## Removal
-
-To remove, use the command:
-
-```bash
-sudo make uninstall
 ```
 
 ## License
