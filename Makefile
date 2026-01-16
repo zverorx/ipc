@@ -14,7 +14,6 @@ BINDIR = bin
 
 HEADERS = $(INCDIR)/ipv4_t.h	\
 		  $(INCDIR)/fill_ipv4.h	\
-		  $(INCDIR)/macros.h	\
 		  $(INCDIR)/analysis.h	
 
 SOURCES = $(SRCDIR)/main.c		\
