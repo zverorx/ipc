@@ -1,41 +1,54 @@
 # ipc
 
-IP calculator, designed for IP analysis.
-Specifies the netmask, wildcards, network, broadcast, minimum and maximum hosts, and the number of hosts by IP/BITMASK format string
+IP calculator
 
----
 ## Prerequisites
+
 Check for the following programs:
+
 * `gcc`
 * `make`
 * `curl`
 * `unzip`
 
 ## Receiving the project
+
 You can get the source code by cloning the repository using the command:
+
+```bash
+curl -L -o ipc-v1.0.0.zip https://github.com/zverorx/ipc/archive/refs/tags/v1.zip
 ```
-curl -L -o ipc-v1.0.0.zip https://github.com/zverorx/ipc/archive/refs/tags/v1.0.0.zip
+
+```bash
 unzip ipc-v1.0.0.zip
 ```
 
 ## Compilation and installation
- Go to the source directory (see Receiving the project), and run the following commands:
+
+Go to the source directory (see Receiving the project), and run the following commands:
+
 ```bash
 make && sudo make install
 ```
 
 To find out more about Makefile features, run 
+
 ```bash
 make help
 ```
 
 ## Usage
-The command takes a string in IP/BITMASK format as a parameter. 
+
+The command takes a string in IP/BITMASK format as a parameter.
+
 If the compilation and installation stage was successful, you can run in the terminal:
+
 ```bash
 ipc 192.168.1.1/24
 ```
+
 The result of such a command will be:
+
 ```
                DEC                 BIN                                     HEX        
 IP             192.168.001.001     11000000.10101000.00000001.00000001     c0.a8.01.01
@@ -50,12 +63,17 @@ Hosts          254
 ```
 
 ## Removal
+
 To remove, use the command:
+
 ```bash
 sudo make uninstall
 ```
+
 ## License
+
 This project is licensed under the GPLv3. See the LICENSE file for more details.
 
 ## Feedback
-You can contact the developer at: zveror1806@gmail.com
+
+To contact the developer, you can email zveror1806@gmail.com.
