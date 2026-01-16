@@ -1,8 +1,8 @@
 /* 
  * This file is part of ipc.
- * ipc - IP calculator, designed for IP analysis 
+ * ipc - IP calculator.
  *
- * Copyright (C) 2025 Egorov Konstantin
+ * Copyright (C) 2025-2026 Egorov Konstantin
  *
  * ipc is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,50 +19,73 @@
  */
 
 #include <stdio.h>
-#include "ipc.h"
-#include "macros.h"
+#include <stdlib.h>
+#include <string.h>
 
-#define QT_CMD_LN_PARAM		2
-#define CMD_LN_PARAM_IP		argv[1]
-
+#include "ipv4_t.h"
+#include "fill_ipv4.h"
+#include "analysis.h"
 
 /**
- * @enum errors
- * @brief Error codes returned by the program.
+ * 
  */
-enum errors {
-	SUCCESS					= 0,	/*< No error. */
-	CMD_LINE_PARAM_ERR		= 1,	/*< Wrong number of command-line args. */
-	MEMORY_ALLOC_ERR		= 2,	/*< Malloc failed for ip_v4 struct. */
-	INCORRECT_IP_ERR		= 3,	/*< Invalid IP address format. */
-	INCORRECT_MASK_ERR		= 4,	/*< Invalid bitmask. */
-	GET_NETMASK_ERR			= 5,	/*< Failed to compute netmask. */
-	GET_WILDCARD_ERR		= 6,	/*< Failed to compute wildcard mask. */
-	GET_NETWORK_ERR			= 7,	/*< Failed to compute network address. */
-	GET_BROADCAST_ERR		= 8,	/*< Failed to compute broadcast address. */
-	GET_HOSTMIN_ERR			= 9,	/*< Failed to compute first host IP. */
-	GET_HOSTMAX_ERR			= 10,	/*< Failed to compute last host IP. */
-	GET_QT_HOSTS_ERR		= 11	/*< Failed to compute number of hosts. */
-};
+static enum mode { analysis, subnetting };
+
+/**
+ * 
+ */
+static int process_args(int argc, char **argv, 
+				 		enum mode *mode, char **ip_str);
 
 int main(int argc, char **argv)
 {
-	struct ip_v4 *ip_ptr = malloc(sizeof(struct ip_v4));
+	int res;
+	enum mode mode;
+	char *ip_str = NULL;
+	ipv4_t *ip = NULL;
 
-	CHECK_POINTER_IP_V4(ip_ptr, MEMORY_ALLOC_ERR);
-	CHECK_CMD_LN_PARAM(CMD_LINE_PARAM_ERR);
+	ip = malloc(sizeof(ipv4_t));
+	if (!ip) { goto handle_error; }
 
-	ASSIGN_ADDR(CMD_LN_PARAM_IP, ip_ptr, INCORRECT_IP_ERR);
-	ASSIGN_BITMASK(CMD_LN_PARAM_IP, ip_ptr, INCORRECT_MASK_ERR);
-	ASSIGN_FIELD(netmask, ip_ptr, GET_NETMASK_ERR);
-	ASSIGN_FIELD(wildcard, ip_ptr, GET_WILDCARD_ERR);
-	ASSIGN_FIELD(network, ip_ptr, GET_NETWORK_ERR);
-	ASSIGN_BROADCAST(ip_ptr, GET_BROADCAST_ERR);
-	ASSIGN_HOSTX(hostmin, ip_ptr, GET_HOSTMIN_ERR);
-	ASSIGN_HOSTX(hostmax, ip_ptr, GET_HOSTMAX_ERR);
-	ASSIGN_QT_HOSTS(ip_ptr, GET_QT_HOSTS_ERR);
+	res = process_args(argc, argv, &mode, &ip_str);
+	if (res == -1) { goto handle_error; }
 
-	print_ip_v4(ip_ptr);
-	free(ip_ptr);
-	return SUCCESS;
+	switch (mode)
+	{
+		case analysis:
+			res = analysis_start(ip, ip_str);	
+			if (res == -1) { goto handle_error; }
+			break;
+		
+		case subnetting:
+			/* TODO: subnetting */
+			/* res = subnetting_start();	
+			if (res == -1) { goto handle_error; } */
+			break;
+	}
+
+	free(ip_str);
+	free(ip);
+	return EXIT_SUCCESS;
+
+	handle_error:
+		free(ip_str);
+		free(ip);
+		fputs("Usage: ipc [-a|-s] <ip/bitmask>\n", stderr);
+		return EXIT_FAILURE;
+}
+
+static int process_args(int argc, char **argv, 
+				 		enum mode *mode, char **ip_str)
+{
+	if (argc < 3) { return -1; }
+
+	if (strcmp(argv[1], "-a") == 0) { *mode = analysis; }
+	else if (strcmp(argv[1], "-s") == 0) { *mode = subnetting; }
+	else { return -1; }
+
+	if (argv[2]) { *ip_str = strdup(argv[2]); }
+	if (!*ip_str) { return -1; }
+
+	return 0;
 }

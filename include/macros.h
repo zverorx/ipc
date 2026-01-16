@@ -1,7 +1,7 @@
 
 /* 
  * This file is part of ipc.
- * ipc - IP calculator, designed for IP analysis 
+ * ipc - IP calculator.
  *
  * Copyright (C) 2025 Egorov Konstantin
  *
@@ -21,32 +21,6 @@
 
 #ifndef MACROS_H_SENTRY
 #define MACROS_H_SENTRY
-
-/**
- * @def CHECK_CMD_LN_PARAM(ERROR)
- * @brief Exits with ERROR if argc != QT_CMD_LN_PARAM.
- */
-
-#define CHECK_CMD_LN_PARAM(ERROR) \
-    do { \
-        if(argc != QT_CMD_LN_PARAM) { \
-			fprintf(stderr, "Usage: %s <IP/CIDR>\n", argv[0]); \
-            return ERROR; \
-        } \
-    } while(0)
-
-/**
- * @def CHECK_POINTER_IP_V4(POINTER, ERROR)
- * @brief Exits with ERROR if POINTER is NULL, else initializes its flags.
- */
-#define CHECK_POINTER_IP_V4(POINTER, ERROR) \
-	do { \
-		if(!POINTER) { \
-			fputs("Memory allocation failed\n", stderr); \
-			return ERROR; \
-		} \
-		assign_flags_ip_v4(POINTER); \
-	} while(0)
 
 /**
  * @def ASSIGN_FIELD(FIELDNAME, POINTER, ERROR)
