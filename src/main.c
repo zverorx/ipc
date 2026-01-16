@@ -29,7 +29,7 @@
 /**
  * 
  */
-static enum mode { analysis, subnetting };
+enum mode { analysis, subnetting };
 
 /**
  * 
