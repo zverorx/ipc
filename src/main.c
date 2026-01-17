@@ -64,13 +64,13 @@ int main(int argc, char **argv)
 	switch (mode) {
 		case analysis:
 			res = analysis_start(ip, ip_str);	
-			if (res == -1) { goto handle_error; }
+			if (res == EXIT_FAILURE) { goto handle_error; }
 			break;
 		
 		case subnetting:
 			/* TODO: subnetting */
 			/* res = subnetting_start();	
-			if (res == -1) { goto handle_error; } */
+			if (res == EXIT_FAILURE) { goto handle_error; } */
 			break;
 	}
 
