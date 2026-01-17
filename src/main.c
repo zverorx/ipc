@@ -27,12 +27,23 @@
 #include "analysis.h"
 
 /**
- * 
+ * @enum mode
+ * @brief Command line options. 
  */
 enum mode { analysis, subnetting };
 
 /**
+ * @brief Process main() command-line arguments.
  * 
+ * Parses command-line arguments to determine program operation mode
+ * and extract IP address string.
+ * 
+ * @param argc Argument count.
+ * @param argv Argument vector.
+ * @param[out] mode Program operation mode.
+ * @param[out] ip_str Extracted IP address string. The caller must free.
+ * 
+ * @return 0 on success, -1 on error.
  */
 static int process_args(int argc, char **argv, 
 				 		enum mode *mode, char **ip_str);
@@ -50,8 +61,7 @@ int main(int argc, char **argv)
 	res = process_args(argc, argv, &mode, &ip_str);
 	if (res == -1) { goto handle_error; }
 
-	switch (mode)
-	{
+	switch (mode) {
 		case analysis:
 			res = analysis_start(ip, ip_str);	
 			if (res == -1) { goto handle_error; }
