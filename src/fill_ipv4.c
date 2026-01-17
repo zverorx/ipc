@@ -241,17 +241,3 @@ ipv4_t *fill_qt_hosts(ipv4_t *ip_ptr)
 
 	return ip_ptr;
 }
-
-void fill_flags(ipv4_t *ip_ptr)
-{
-	if(!ip_ptr) { return; }
-
-	ip_ptr->addr_set = 0;
-	ip_ptr->bitmask_set = 0;
-	ip_ptr->netmask_set = 0;
-	ip_ptr->wildcard_set = 0;
-	ip_ptr->network_set = 0;
-	ip_ptr->broadcast_set = 0;
-
-	return;
-}

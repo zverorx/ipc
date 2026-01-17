@@ -152,12 +152,4 @@ ipv4_t *fill_hostmax(ipv4_t *ip_ptr);
  */
 ipv4_t *fill_qt_hosts(ipv4_t *ip_ptr);
 
-/**
- * @brief Sets all flag fields of the ip_v4 structure to 0. 
- * @param ip A reference to a structure storing IP data.
- * @return void.
- * @note The flags are set to 0: addr_set, bitmask_set, netmask_set, wildcard_set, network_set, broadcast_set.
- */
-void fill_flags(ipv4_t *ip);
-
 #endif /* FILL_IPV4_H_SENTRY */
