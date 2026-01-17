@@ -43,7 +43,7 @@
  * @note The function validates that each octet is a number between 0 and 255 and that there are exactly 4 octets separated by dots.
  * @warning This function does not modify the addr_set flag. The calling code must set ip_ptr->addr_set = 1 upon successful return.
  */
-ipv4_t *assign_addr(const char *ip_str, ipv4_t *ip_ptr);
+ipv4_t *fill_addr(const char *ip_str, ipv4_t *ip_ptr);
 
 /**
  * @brief Assigns to the bitmask field of the ip_v4 structure.
@@ -57,7 +57,7 @@ ipv4_t *assign_addr(const char *ip_str, ipv4_t *ip_ptr);
  *     The calling code must set these flags based on the parsed bitmask value upon successful return.
  * @see BITS_IN_IP
  */
-ipv4_t *assign_bitmask(const char *cidr, ipv4_t *ip_ptr);
+ipv4_t *fill_bitmask(const char *cidr, ipv4_t *ip_ptr);
 
 /**
  * @brief Assigns to the netmask field of the ip_v4 structure.
@@ -70,7 +70,7 @@ ipv4_t *assign_bitmask(const char *cidr, ipv4_t *ip_ptr);
  * @warning This function does not modify the netmask_set flag. 
  *     The calling code must set ip_ptr->netmask_set = 1 upon successful return.
  */
-ipv4_t *assign_netmask(ipv4_t *ip_ptr);
+ipv4_t *fill_netmask(ipv4_t *ip_ptr);
 
 /**
  * @brief Assigns to the wildcard field of the ip_v4 structure.
@@ -81,7 +81,7 @@ ipv4_t *assign_netmask(ipv4_t *ip_ptr);
  * @warning This function does not modify the wildcard_set flag. 
  *     The calling code must set ip_ptr->wildcard_set = 1 upon successful return.
  */
-ipv4_t *assign_wildcard(ipv4_t *ip_ptr);
+ipv4_t *fill_wildcard(ipv4_t *ip_ptr);
 
 /**
  * @brief Assigns to the network field of the ip_v4 structure.
@@ -94,7 +94,7 @@ ipv4_t *assign_wildcard(ipv4_t *ip_ptr);
  * @warning This function does not modify the network_set flag. 
  *     The calling code must set ip_ptr->network_set = 1 upon successful return.
  */
-ipv4_t *assign_network(ipv4_t *ip_ptr);
+ipv4_t *fill_network(ipv4_t *ip_ptr);
 
 /**
  * @brief Assigns to the broadcast field of the ip_v4 structure.
@@ -109,7 +109,7 @@ ipv4_t *assign_network(ipv4_t *ip_ptr);
  *     The calling code must set ip_ptr->broadcast_set = 1 upon successful return.
  * @warning This function will return NULL for /31 networks (bitmask == 31) as they do not have a broadcast address.
  */
-ipv4_t *assign_broadcast(ipv4_t *ip_ptr);
+ipv4_t *fill_broadcast(ipv4_t *ip_ptr);
 
 /**
  * @brief Assigns to the hostmin field of the ip_v4 structure.
@@ -119,7 +119,7 @@ ipv4_t *assign_broadcast(ipv4_t *ip_ptr);
  * @note For /32 networks (is_host_route flag), this function will not calculate hostmin.
  * @note For /31 networks (is_point_to_point flag), hostmin equals network address.
  */
-ipv4_t *assign_hostmin(ipv4_t *ip_ptr);
+ipv4_t *fill_hostmin(ipv4_t *ip_ptr);
 
 /**
  * @brief Assigns to the hostmax field of the ip_v4 structure.
@@ -129,7 +129,7 @@ ipv4_t *assign_hostmin(ipv4_t *ip_ptr);
  * @note For /32 networks (is_host_route flag), this function will not calculate hostmax.
  * @note For /31 networks (indicated by the is_point_to_point flag), hostmax is calculated as network address + 1.
  */
-ipv4_t *assign_hostmax(ipv4_t *ip_ptr);
+ipv4_t *fill_hostmax(ipv4_t *ip_ptr);
 
 /**
  * @brief Assigns to the hosts field of the ip_v4 structure.
@@ -137,6 +137,14 @@ ipv4_t *assign_hostmax(ipv4_t *ip_ptr);
  * @return Address of the ip_v4 structure, if the hosts field can be assigned a value, otherwise NULL.
  * @pre The bimask_set flag in ip_ptr must be set to 1.
  */
-ipv4_t *assign_qt_hosts(ipv4_t *ip_ptr);
+ipv4_t *fill_qt_hosts(ipv4_t *ip_ptr);
+
+/**
+ * @brief Sets all flag fields of the ip_v4 structure to 0. 
+ * @param ip A reference to a structure storing IP data.
+ * @return void.
+ * @note The flags are set to 0: addr_set, bitmask_set, netmask_set, wildcard_set, network_set, broadcast_set.
+ */
+void fill_flags(ipv4_t *ip);
 
 #endif /* FILL_IPV4_H_SENTRY */

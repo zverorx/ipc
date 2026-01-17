@@ -24,23 +24,13 @@
 #include "ipv4_t.h"
 
 /**
+ * @brief Analyze IPv4 address.
  * 
+ * @param ip ipv4 structure to fill.
+ * @param ip_str IP address in CIDR notation.
+ * 
+ * @return EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
 int analysis_start(ipv4_t *ip, char *ip_str);
-
-/**
- * @brief Prints the ip_v4 structure data to stdout.
- * @param ip A reference to a structure storing IP data.
- * @return void.
- */
-void print_ip_v4(const ipv4_t *ip);
-
-/**
- * @brief Sets all flag fields of the ip_v4 structure to 0. 
- * @param ip A reference to a structure storing IP data.
- * @return void.
- * @note The flags are set to 0: addr_set, bitmask_set, netmask_set, wildcard_set, network_set, broadcast_set.
- */
-void assign_flags_ip_v4(ipv4_t *ip);
 
 #endif /* ANALYSIS_H_SENTRY */

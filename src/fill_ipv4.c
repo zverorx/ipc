@@ -23,7 +23,7 @@
 #include "ipv4_t.h"
 #include "fill_ipv4.h"
 
-ipv4_t *assign_addr(const char *ip_str, ipv4_t *ip_ptr)
+ipv4_t *fill_addr(const char *ip_str, ipv4_t *ip_ptr)
 {
 	uint32_t octet = 0;
 	uint32_t dot_count = 0;
@@ -65,7 +65,7 @@ ipv4_t *assign_addr(const char *ip_str, ipv4_t *ip_ptr)
 	return ip_ptr;
 }
 
-ipv4_t *assign_bitmask(const char *cidr, ipv4_t *ip_ptr)
+ipv4_t *fill_bitmask(const char *cidr, ipv4_t *ip_ptr)
 {
 	uint8_t bitmask = 0;
 	uint8_t exist_mask = 0;
@@ -89,7 +89,7 @@ ipv4_t *assign_bitmask(const char *cidr, ipv4_t *ip_ptr)
 	return ip_ptr;
 }
 
-ipv4_t *assign_netmask(ipv4_t *ip_ptr)
+ipv4_t *fill_netmask(ipv4_t *ip_ptr)
 {
 	if(!ip_ptr->bitmask_set) {
 		return NULL;
@@ -114,7 +114,7 @@ ipv4_t *assign_netmask(ipv4_t *ip_ptr)
 	return ip_ptr;
 }
 
-ipv4_t *assign_wildcard(ipv4_t *ip_ptr)
+ipv4_t *fill_wildcard(ipv4_t *ip_ptr)
 {
 	if(!ip_ptr->bitmask_set) {
 		return NULL;
@@ -139,7 +139,7 @@ ipv4_t *assign_wildcard(ipv4_t *ip_ptr)
 	return ip_ptr;
 }
 
-ipv4_t *assign_network(ipv4_t *ip_ptr)
+ipv4_t *fill_network(ipv4_t *ip_ptr)
 {
 	if(!ip_ptr->addr_set || !ip_ptr->netmask_set) {
 		return NULL;
@@ -151,7 +151,7 @@ ipv4_t *assign_network(ipv4_t *ip_ptr)
 	return ip_ptr;
 }
 
-ipv4_t *assign_broadcast(ipv4_t *ip_ptr)
+ipv4_t *fill_broadcast(ipv4_t *ip_ptr)
 {
 	if(!ip_ptr->network_set || !ip_ptr->wildcard_set || ip_ptr->is_point_to_point) {
 		return NULL;
@@ -163,7 +163,7 @@ ipv4_t *assign_broadcast(ipv4_t *ip_ptr)
 	return ip_ptr;
 }
 
-ipv4_t *assign_hostmin(ipv4_t *ip_ptr)
+ipv4_t *fill_hostmin(ipv4_t *ip_ptr)
 {
 	if(ip_ptr->network_set && !ip_ptr->is_host_route) {
 		for(int i = 0; i < OCTET_COUNT - 1; i++) {
@@ -183,7 +183,7 @@ ipv4_t *assign_hostmin(ipv4_t *ip_ptr)
 	return ip_ptr;
 }
 
-ipv4_t *assign_hostmax(ipv4_t *ip_ptr)
+ipv4_t *fill_hostmax(ipv4_t *ip_ptr)
 {
 	if(ip_ptr->network_set && ip_ptr->is_point_to_point) {
 		for(int i = 0; i < OCTET_COUNT - 1; i++) {
@@ -207,7 +207,7 @@ ipv4_t *assign_hostmax(ipv4_t *ip_ptr)
 	return ip_ptr;
 }
 
-ipv4_t *assign_qt_hosts(ipv4_t *ip_ptr)
+ipv4_t *fill_qt_hosts(ipv4_t *ip_ptr)
 {
 	uint8_t bits_for_host;
 	uint64_t qt_hosts = 1;
@@ -232,4 +232,18 @@ ipv4_t *assign_qt_hosts(ipv4_t *ip_ptr)
 	}
 
 	return ip_ptr;
+}
+
+void fill_flags(ipv4_t *ip_ptr)
+{
+	if(!ip_ptr) { return; }
+
+	ip_ptr->addr_set = 0;
+	ip_ptr->bitmask_set = 0;
+	ip_ptr->netmask_set = 0;
+	ip_ptr->wildcard_set = 0;
+	ip_ptr->network_set = 0;
+	ip_ptr->broadcast_set = 0;
+
+	return;
 }
