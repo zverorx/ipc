@@ -82,15 +82,19 @@ ipv4_t *fill_bitmask(ipv4_t *ip, const char *cidr);
 ipv4_t *fill_netmask(ipv4_t *ip);
 
 /**
- * @brief Assigns to the wildcard field of the ip_v4 structure.
- * @param ip_ptr A reference to a structure storing IP data.
- * @return Address of the ip_v4 structure, if the wildcard field can be assigned a value, otherwise NULL.
- * @pre The bitmask_set flag in ip_ptr must be set to 1.
- * @note This function calculates the wildcard mask based on the bitmask value stored in the ip_ptr structure.
- * @warning This function does not modify the wildcard_set flag. 
- *     The calling code must set ip_ptr->wildcard_set = 1 upon successful return.
+ * @brief Fill wildcard based on the bitmask.
+ * 
+ * @param ip Pointer to the ipv4_t structure to fill.
+ * 
+ * @return Pointer to the ipv4_t structure, otherwise NULL.
+ * 
+ * @pre The bitmask_set flag in the ipv4_t structure must be set to 1.
+ * 
+ * @note On success, the wildcard_set field is set to 1.
+ * 
+ * @see fill_bitmask
  */
-ipv4_t *fill_wildcard(ipv4_t *ip_ptr);
+ipv4_t *fill_wildcard(ipv4_t *ip);
 
 /**
  * @brief Assigns to the network field of the ip_v4 structure.

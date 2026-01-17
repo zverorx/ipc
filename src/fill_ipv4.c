@@ -116,29 +116,35 @@ ipv4_t *fill_netmask(ipv4_t *ip)
 	return ip;
 }
 
-ipv4_t *fill_wildcard(ipv4_t *ip_ptr)
+ipv4_t *fill_wildcard(ipv4_t *ip)
 {
-	if(!ip_ptr->bitmask_set) {
-		return NULL;
-	}
-	uint8_t octet_cnt = OCTET_COUNT;
+	uint8_t octet_cnt = 4;
 	uint8_t octet = 1;
 	uint8_t offset = 0;
-	uint8_t wildcard[32] = {[0 ... 31] = 1};
-	for(int i = 0; i < ip_ptr->bitmask; i++) {
-		wildcard[i] = 0;
-	}
+	uint8_t wildcard[33];
 
-	while(octet_cnt) {
+	memset(&wildcard, 1, sizeof(wildcard) - 1);
+	wildcard[32] = '\0';
+
+	if (!ip) { return NULL; }
+	if (!ip->bitmask_set) { return NULL; }
+
+	for (int i = 0; i < ip->bitmask; i++) { wildcard[i] = 0; }
+
+	while (octet_cnt) {
 		for(int i = 0 + 8 * offset; i <= 7 + 8 * offset; i++) {
 			octet = (octet * 2) + wildcard[i];
 		}
-		ip_ptr->wildcard[offset] = octet;
+
+		ip->wildcard[offset] = octet;
 		offset++;
 		octet_cnt--;
 		octet = 1;
 	}
-	return ip_ptr;
+
+	ip->wildcard_set = 1;
+
+	return ip;
 }
 
 ipv4_t *fill_network(ipv4_t *ip_ptr)
