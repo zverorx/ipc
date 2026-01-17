@@ -50,18 +50,21 @@
 ipv4_t *fill_addr(ipv4_t *ip, const char *ip_str);
 
 /**
- * @brief Assigns to the bitmask field of the ip_v4 structure.
- * @param cidr IP/MASK format string (e.g., "192.168.1.1/24").
- * @param ip_ptr A reference to a structure storing IP data.
- * @return Address of the ip_v4 structure, if the bitmask field can be assigned a value, otherwise NULL.
- * @post If successful, the bitmask field in ip_ptr is populated.
- * @note This function parses the bitmask part of the string following the '/' character.
- * @note The function validates that the bitmask is a number between 0 and 32.
- * @warning This function does not modify the bitmask_set, is_host_route, or is_point_to_point flags. 
- *     The calling code must set these flags based on the parsed bitmask value upon successful return.
- * @see BITS_IN_IP
+ * @brief Fill bitmask from string.
+ * 
+ * Parses a string with CIDR notation (e.g "192.168.1.1/24" or "/24")
+ * and stores it in the provided ipv4_t structure.
+ * 
+ * @param ip Pointer to the ipv4_t structure to fill.
+ * @param cidr String containing CIDR notation.
+ * 
+ * @return Pointer to the ipv4_t structure, otherwise NULL.
+ * 
+ * @note On success, the bimask_set field is set to 1.
+ * @note On success, if the mask is 32, the is_host_route flag is set to 1.
+ * @note On success, if the mask is 31, the is_point_to_point flag is set to 1.
  */
-ipv4_t *fill_bitmask(const char *cidr, ipv4_t *ip_ptr);
+ipv4_t *fill_bitmask(ipv4_t *ip, const char *cidr);
 
 /**
  * @brief Assigns to the netmask field of the ip_v4 structure.

@@ -55,28 +55,34 @@ ipv4_t *fill_addr(ipv4_t *ip, const char *ip_str)
 	return ip;
 }
 
-ipv4_t *fill_bitmask(const char *cidr, ipv4_t *ip_ptr)
+ipv4_t *fill_bitmask(ipv4_t *ip, const char *cidr)
 {
 	uint8_t bitmask = 0;
 	uint8_t exist_mask = 0;
 
-	for(int i = 0; cidr[i] != '\0'; i++) {
+	if (!ip || !cidr) { return NULL; }
+
+	for (int i = 0; cidr[i] != '\0'; i++) {
 		if(cidr[i] == '/') {
 			exist_mask = 1;
 			i++;
 		}
-		if(exist_mask && cidr[i] >= '0' && cidr[i] <= '9') {
+
+		if (exist_mask && cidr[i] >= '0' && cidr[i] <= '9') {
 			bitmask = bitmask * 10 + (cidr[i] - '0');
 		}
-		else if(exist_mask){
-			return NULL;
-		}
+		else if (exist_mask) { return NULL; }
 	}
-	if(bitmask > 32 || !exist_mask) {
-		return NULL;
-	}
-	ip_ptr->bitmask = bitmask;
-	return ip_ptr;
+
+	if (bitmask > 32 || !exist_mask ) { return NULL; }
+
+	ip->bitmask = bitmask;
+	ip->bitmask_set = 1;
+
+	if (ip->bitmask == 32) { ip->is_host_route = 1; }
+	if (ip->bitmask == 31) { ip->is_point_to_point = 1; }
+
+	return ip;
 }
 
 ipv4_t *fill_netmask(ipv4_t *ip_ptr)
