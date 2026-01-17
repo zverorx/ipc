@@ -67,17 +67,19 @@ ipv4_t *fill_addr(ipv4_t *ip, const char *ip_str);
 ipv4_t *fill_bitmask(ipv4_t *ip, const char *cidr);
 
 /**
- * @brief Assigns to the netmask field of the ip_v4 structure.
- * @param ip_ptr A reference to a structure storing IP data.
- * @return Address of the ip_v4 structure, if the netmask field can be assigned a value, otherwise NULL.
- * @pre The bitmask_set flag in ip_ptr must be set to 1.
- * @post If successful, the netmask field in ip_ptr is populated, 
- *     and the caller is responsible for setting the netmask_set flag to 1.
- * @note This function calculates the netmask based on the bitmask value stored in the ip_ptr structure.
- * @warning This function does not modify the netmask_set flag. 
- *     The calling code must set ip_ptr->netmask_set = 1 upon successful return.
+ * @brief Fill netmask based on the bitmask.
+ * 
+ * @param ip Pointer to the ipv4_t structure to fill.
+ * 
+ * @return Pointer to the ipv4_t structure, otherwise NULL.
+ * 
+ * @pre The bitmask_set flag in the ipv4_t structure must be set to 1.
+ * 
+ * @note On success, the netmask_set field is set to 1.
+ * 
+ * @see fill_bitmask
  */
-ipv4_t *fill_netmask(ipv4_t *ip_ptr);
+ipv4_t *fill_netmask(ipv4_t *ip);
 
 /**
  * @brief Assigns to the wildcard field of the ip_v4 structure.

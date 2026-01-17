@@ -19,6 +19,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 
 #include "ipv4_t.h"
 #include "fill_ipv4.h"
@@ -85,29 +86,34 @@ ipv4_t *fill_bitmask(ipv4_t *ip, const char *cidr)
 	return ip;
 }
 
-ipv4_t *fill_netmask(ipv4_t *ip_ptr)
+ipv4_t *fill_netmask(ipv4_t *ip)
 {
-	if(!ip_ptr->bitmask_set) {
-		return NULL;
-	}
-	uint8_t octet_cnt = OCTET_COUNT;
+	uint8_t octet_cnt = 4;
 	uint8_t octet = 1;
 	uint8_t offset = 0;
-	uint8_t netmask[33] = {[0 ... 32] = 0};
-	for(int i = 0; i < ip_ptr->bitmask; i++) {
-		netmask[i] = 1;
-	}
+	uint8_t netmask[33];
 
-	while(octet_cnt) {
-		for(int i = 0 + 8 * offset; i <= 7 + 8 * offset; i++) {
+	memset(&netmask, 0, sizeof(netmask));
+
+	if (!ip) { return NULL; }
+	if (!ip->bitmask_set) { return NULL; }
+
+	for (int i = 0; i < ip->bitmask; i++) { netmask[i] = 1; }
+
+	while (octet_cnt) {
+		for (int i = 0 + 8 * offset; i <= 7 + 8 * offset; i++) {
 			octet = (octet * 2) + netmask[i];
 		}
-		ip_ptr->netmask[offset] = octet;
+
+		ip->netmask[offset] = octet;
 		offset++;
 		octet_cnt--;
 		octet = 1;
 	}
-	return ip_ptr;
+
+	ip->netmask_set = 1;
+
+	return ip;
 }
 
 ipv4_t *fill_wildcard(ipv4_t *ip_ptr)
