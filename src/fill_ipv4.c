@@ -23,46 +23,36 @@
 #include "ipv4_t.h"
 #include "fill_ipv4.h"
 
-ipv4_t *fill_addr(const char *ip_str, ipv4_t *ip_ptr)
+ipv4_t *fill_addr(ipv4_t *ip, const char *ip_str)
 {
 	uint32_t octet = 0;
 	uint32_t dot_count = 0;
 	uint8_t exists_num_in_oct = 0;
 
-	for(int i = 0; ip_str[i] != '\0' && ip_str[i] != '/'; i++) {
+	if (!ip || !ip_str) { return NULL; }
+
+	for (int i = 0; ip_str[i] != '\0' && ip_str[i] != '/'; i++) {
 		if(ip_str[i] >= '0' && ip_str[i] <= '9') {
 			exists_num_in_oct = 1;
 			octet = octet * 10 + (ip_str[i] - '0');
 		}
-		else if((ip_str[i] == '.') && (octet <= 255) && exists_num_in_oct) {
+		else if ((ip_str[i] == '.') && (octet <= 255) && exists_num_in_oct) {
 			dot_count++;
-			switch(dot_count) {
-				case 1:
-					ip_ptr->addr[INDX_FRST_OCT] = octet;
-					break;
-				case 2:
-					ip_ptr->addr[INDX_SCND_OCT] = octet;
-					break;
-				case 3:
-					ip_ptr->addr[INDX_THRD_OCT] = octet;
-					break;
-				default:
-					return NULL;
-			}
+			if (dot_count > 3) { return NULL; }
+			ip->addr[dot_count - 1] = octet;
 			octet = 0;
 			exists_num_in_oct = 0;
 		}
-		else {
-			return NULL;
-		}
+		else { return NULL; }
 	}
-	if((dot_count == 3) && (octet <= 255) && exists_num_in_oct) {
-		ip_ptr->addr[INDX_FRTH_OCT] = octet;
+
+	if ((dot_count == 3) && (octet <= 255) && exists_num_in_oct) {
+		ip->addr[dot_count] = octet;
 	}
-	else {
-		return NULL;
-	}
-	return ip_ptr;
+	else { return NULL; }
+
+	ip->addr_set = 1;
+	return ip;
 }
 
 ipv4_t *fill_bitmask(const char *cidr, ipv4_t *ip_ptr)

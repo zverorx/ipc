@@ -34,16 +34,20 @@
 #define BITS_IN_IP			32
 
 /**
- * @brief Assigns a value to the addr field of the ip_v4 structure.
- * @param ip_str String representation of IP (e.g., "192.168.1.1").
- * @param ip_ptr A reference to a structure storing IP data.
- * @return Address of the ip_v4 structure, if the addr field can be assigned a value, otherwise NULL.
- * @post If successful, the addr field in ip_ptr is populated, and the caller is responsible for setting the addr_set flag to 1.
- * @note This function parses the IP address part of the string up to the '/' character (if present) or the end of the string.
- * @note The function validates that each octet is a number between 0 and 255 and that there are exactly 4 octets separated by dots.
- * @warning This function does not modify the addr_set flag. The calling code must set ip_ptr->addr_set = 1 upon successful return.
+ * @brief Fill IPv4 address from string.
+ * 
+ * Parses the IPv4 address string (e.g. "192.168.1.1")
+ * and stores the octets in the provided ipv4_t structure.
+ * Stops parsing at '/' character or null terminator.
+ * 
+ * @param ip Pointer to the ipv4_t structure to fill.
+ * @param ip_str String representation of IPv4.
+ * 
+ * @return Pointer to the ipv4_t structure, otherwise NULL.
+ * 
+ * @note On success, the addr_set field is set to 1.
  */
-ipv4_t *fill_addr(const char *ip_str, ipv4_t *ip_ptr);
+ipv4_t *fill_addr(ipv4_t *ip, const char *ip_str);
 
 /**
  * @brief Assigns to the bitmask field of the ip_v4 structure.
