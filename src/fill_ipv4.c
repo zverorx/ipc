@@ -191,28 +191,29 @@ ipv4_t *fill_hostmin(ipv4_t *ip)
 	return ip;
 }
 
-ipv4_t *fill_hostmax(ipv4_t *ip_ptr)
+ipv4_t *fill_hostmax(ipv4_t *ip)
 {
-	if(ip_ptr->network_set && ip_ptr->is_point_to_point) {
-		for(int i = 0; i < OCTET_COUNT - 1; i++) {
-			ip_ptr->hostmax[i] = ip_ptr->network[i];
+	if (!ip) { return NULL; }
+	if (!ip->network_set || !ip->broadcast_set) { return NULL; }
+
+	if (!ip->is_point_to_point && !ip->is_host_route) {
+		for(int i = 0; i < 4; i++) {
+			ip->hostmax[i] = ip->broadcast[i];
 		}
 
-		ip_ptr->hostmax[INDX_FRTH_OCT] = ip_ptr->network[INDX_FRTH_OCT] + 1;
-	}
-	else if(ip_ptr->broadcast_set && !ip_ptr->is_host_route) {
-		for(int i = 0; i < OCTET_COUNT - 1; i++) {
-			ip_ptr->hostmax[i] = ip_ptr->broadcast[i];
-		}
-
-		ip_ptr->hostmax[INDX_FRTH_OCT] = ip_ptr->broadcast[INDX_FRTH_OCT] - 1;
-
-	}
+		ip->hostmax[3] -= 1;
+	} 
 	else {
-		return NULL;
+		for(int i = 0; i < 4; i++) {
+			ip->hostmax[i] = ip->network[i];
+		}
+
+		if (ip->is_point_to_point) {
+			ip->hostmax[3] += 1;
+		}
 	}
 
-	return ip_ptr;
+	return ip;
 }
 
 ipv4_t *fill_qt_hosts(ipv4_t *ip_ptr)

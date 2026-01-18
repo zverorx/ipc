@@ -142,14 +142,18 @@ ipv4_t *fill_broadcast(ipv4_t *ip);
 ipv4_t *fill_hostmin(ipv4_t *ip);
 
 /**
- * @brief Assigns to the hostmax field of the ip_v4 structure.
- * @param ip_ptr A reference to a structure storing IP data.
- * @return Address of the ip_v4 structure, if the hostmax field can be assigned a value, otherwise NULL.
- * @pre The network_set and broadcast_set flags in ip_ptr must be set to 1.
- * @note For /32 networks (is_host_route flag), this function will not calculate hostmax.
- * @note For /31 networks (indicated by the is_point_to_point flag), hostmax is calculated as network address + 1.
+ * @brief Fill hostmax based on the network and broadcast.
+ * 
+ * @param ip Pointer to the ipv4_t structure to fill.
+ * 
+ * @return Pointer to the ipv4_t structure, otherwise NULL.
+ * 
+ * @pre The network_set and broadcast_set flags in the ipv4_t structure must be set to 1.
+ * 
+ * @see fill_network
+ * @see fill_broadcast
  */
-ipv4_t *fill_hostmax(ipv4_t *ip_ptr);
+ipv4_t *fill_hostmax(ipv4_t *ip);
 
 /**
  * @brief Assigns to the hosts field of the ip_v4 structure.
