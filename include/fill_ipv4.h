@@ -129,14 +129,17 @@ ipv4_t *fill_network(ipv4_t *ip);
 ipv4_t *fill_broadcast(ipv4_t *ip);
 
 /**
- * @brief Assigns to the hostmin field of the ip_v4 structure.
- * @param ip_ptr A reference to a structure storing IP data.
- * @return Address of the ip_v4 structure, if the hostmin field can be assigned a value, otherwise NULL.
- * @pre The network_set flag in ip_ptr must be set to 1.
- * @note For /32 networks (is_host_route flag), this function will not calculate hostmin.
- * @note For /31 networks (is_point_to_point flag), hostmin equals network address.
+ * @brief Fill hostmin based on the network.
+ * 
+ * @param ip Pointer to the ipv4_t structure to fill.
+ *
+ * @return Pointer to the ipv4_t structure, otherwise NULL.
+ * 
+ * @pre The network_set flag in the ipv4_t structure must be set to 1.
+ * 
+ * @see fill_network
  */
-ipv4_t *fill_hostmin(ipv4_t *ip_ptr);
+ipv4_t *fill_hostmin(ipv4_t *ip);
 
 /**
  * @brief Assigns to the hostmax field of the ip_v4 structure.

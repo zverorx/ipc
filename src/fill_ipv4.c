@@ -175,24 +175,20 @@ ipv4_t *fill_broadcast(ipv4_t *ip)
 	return ip;
 }
 
-ipv4_t *fill_hostmin(ipv4_t *ip_ptr)
+ipv4_t *fill_hostmin(ipv4_t *ip)
 {
-	if(ip_ptr->network_set && !ip_ptr->is_host_route) {
-		for(int i = 0; i < OCTET_COUNT - 1; i++) {
-			ip_ptr->hostmin[i] = ip_ptr->network[i];
-		}
-		if(ip_ptr->is_point_to_point) {
-			ip_ptr->hostmin[INDX_FRTH_OCT] = ip_ptr->network[INDX_FRTH_OCT];
-		}
-		else {
-			ip_ptr->hostmin[INDX_FRTH_OCT] = ip_ptr->network[INDX_FRTH_OCT] + 1;
-		}
-	}
-	else {
-		return NULL;
+	if (!ip) { return NULL; }
+	if (!ip->network_set) { return NULL; }
+
+	for (int i = 0; i < 4; i++) {
+		ip->hostmin[i] = ip->network[i];
 	}
 
-	return ip_ptr;
+	if (!ip->is_host_route && !ip->is_point_to_point) {
+		ip->network[3] += 1;
+	}
+
+	return ip;
 }
 
 ipv4_t *fill_hostmax(ipv4_t *ip_ptr)
