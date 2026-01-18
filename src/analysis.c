@@ -27,228 +27,207 @@
 #include "analysis.h"
 
 /**
- * @brief Prints the ip data to stdout.
- * @param ip A reference to a structure storing IP data.
+ * @brief Prints IPv4 network information to stdout.
+ * 
+ * Displays IP details in DEC/BIN/HEX formats.
+ * Special handling for:
+ * 	- /31 (point-to-point links with no network/broadcast addresses)
+ * 	- /32 (single host addresses with no network/broadcast).
+ * 
+ * @param ip Pointer to IPv4 data structure.
  */
-static void print_ip_v4(const ipv4_t *ip);
+static void print_ipv4(const ipv4_t *ip);
 
 int analysis_start(ipv4_t *ip, char *ip_str)
 {
-	fill_flags(ip);
+	if (!ip) { return EXIT_FAILURE; }
+	if (!ip_str) { return EXIT_FAILURE; }
 
-	if (!fill_addr(ip_str, ip)) { return EXIT_FAILURE; }
-	ip->addr_set = 1;
+	memset(ip, 0, sizeof(ipv4_t));
 
-	if(!fill_bitmask(ip_str, ip)) { return EXIT_FAILURE; }
-	else if(ip->bitmask == BITS_IN_IP) {
-		ip->is_host_route = 1;
-		ip->bitmask_set = 1;
-	}
-	else if(ip->bitmask == BITS_IN_IP - 1) {
-		ip->is_point_to_point = 1;
-		ip->bitmask_set = 1;
-	}
-	else {
-		ip->is_host_route = 0;
-		ip->is_point_to_point = 0;
-		ip->bitmask_set = 1;
-	}
+	if (!fill_addr(ip, ip_str)) { return EXIT_FAILURE; }
+	if (!fill_bitmask(ip, ip_str)) { return EXIT_FAILURE; }
+	if (!fill_netmask(ip)) { return EXIT_FAILURE; }
+	if (!fill_wildcard(ip)) { return EXIT_FAILURE; }
+	if (!fill_network(ip)) { return EXIT_FAILURE; }
+	if (!fill_broadcast(ip)) { return EXIT_FAILURE; }
+	if (!fill_hostmin(ip)) { return EXIT_FAILURE; }
+	if (!fill_hostmax(ip)) { return EXIT_FAILURE; }
+	if (!fill_hostcnt(ip)) { return EXIT_FAILURE; }
 
-	if(!fill_netmask(ip)) { return EXIT_FAILURE; }
-	ip->netmask_set = 1;
-
-	if(!fill_wildcard(ip)) { return EXIT_FAILURE; }
-	ip->wildcard_set = 1;
-
-	if(!fill_network(ip)) { return EXIT_FAILURE; }
-	ip->network_set = 1;
-
-	if(!fill_broadcast(ip) && !ip->is_point_to_point) {
-		return EXIT_FAILURE;
-	}
-	ip->broadcast_set = 1;
-
-	if(!fill_hostmin(ip) && !ip->is_host_route) {
-		return EXIT_FAILURE;
-	}
-
-	if(!fill_hostmax(ip) && !ip->is_host_route) {
-		return EXIT_FAILURE;
-	}
-
-	if(!fill_qt_hosts(ip)) { return EXIT_FAILURE; }
-
-	print_ip_v4(ip);
+	print_ipv4(ip);
 
     return EXIT_SUCCESS;
 }
 
-static void print_ip_v4(const ipv4_t *ip)
+static void print_ipv4(const ipv4_t *ip)
 {
-	if(!ip) {
-		return;
-	}
+	if(!ip) { return; }
 
+	/* Print title */
 	printf("%15s%-20s%-40s%-11s\n", "", "DEC", "BIN", "HEX");
-	/* Print IP */
+
+	/* Print addr */
 	printf("%-15s%03d.%03d.%03d.%03d%5s",
-		    "IP",	
-			ip->addr[INDX_FRST_OCT], 
-			ip->addr[INDX_SCND_OCT], 
-			ip->addr[INDX_THRD_OCT],
-			ip->addr[INDX_FRTH_OCT],
+		    "Addr",	
+			ip->addr[0], 
+			ip->addr[1], 
+			ip->addr[2],
+			ip->addr[3],
 			"");
 	printf("%08b.%08b.%08b.%08b%5s", 
-			ip->addr[INDX_FRST_OCT], 
-			ip->addr[INDX_SCND_OCT], 
-			ip->addr[INDX_THRD_OCT],
-			ip->addr[INDX_FRTH_OCT],
+			ip->addr[0], 
+			ip->addr[1], 
+			ip->addr[2],
+			ip->addr[3],
 			"");
 	printf("%02x.%02x.%02x.%02x\n", 
-			ip->addr[INDX_FRST_OCT], 
-			ip->addr[INDX_SCND_OCT], 
-			ip->addr[INDX_THRD_OCT],
-			ip->addr[INDX_FRTH_OCT]);
+			ip->addr[0], 
+			ip->addr[1], 
+			ip->addr[2],
+			ip->addr[3]);
+
 	/* Print bitmask */
 	printf("%-15s%d\n", "Bitmask", ip->bitmask);
 
 	/* Prtint netmask */
 	printf("%-15s%03d.%03d.%03d.%03d%5s",
 		    "Netmask",	
-			ip->netmask[INDX_FRST_OCT], 
-			ip->netmask[INDX_SCND_OCT], 
-			ip->netmask[INDX_THRD_OCT],
-			ip->netmask[INDX_FRTH_OCT],
+			ip->netmask[0], 
+			ip->netmask[1], 
+			ip->netmask[2],
+			ip->netmask[3],
 			"");
 	printf("%08b.%08b.%08b.%08b%5s", 
-			ip->netmask[INDX_FRST_OCT], 
-			ip->netmask[INDX_SCND_OCT], 
-			ip->netmask[INDX_THRD_OCT],
-			ip->netmask[INDX_FRTH_OCT],
+			ip->netmask[0], 
+			ip->netmask[1], 
+			ip->netmask[2],
+			ip->netmask[3],
 			"");
 	printf("%02x.%02x.%02x.%02x%5s\n", 
-			ip->netmask[INDX_FRST_OCT], 
-			ip->netmask[INDX_SCND_OCT], 
-			ip->netmask[INDX_THRD_OCT],
-			ip->netmask[INDX_FRTH_OCT],
+			ip->netmask[0], 
+			ip->netmask[1], 
+			ip->netmask[2],
+			ip->netmask[3],
 			"");
 
 	/* Print wildcard */
 	printf("%-15s%03d.%03d.%03d.%03d%5s",
 		    "Wildcard",	
-			ip->wildcard[INDX_FRST_OCT], 
-			ip->wildcard[INDX_SCND_OCT], 
-			ip->wildcard[INDX_THRD_OCT],
-			ip->wildcard[INDX_FRTH_OCT],
+			ip->wildcard[0], 
+			ip->wildcard[1], 
+			ip->wildcard[2],
+			ip->wildcard[3],
 			"");
 	printf("%08b.%08b.%08b.%08b%5s", 
-			ip->wildcard[INDX_FRST_OCT], 
-			ip->wildcard[INDX_SCND_OCT], 
-			ip->wildcard[INDX_THRD_OCT],
-			ip->wildcard[INDX_FRTH_OCT],
+			ip->wildcard[0], 
+			ip->wildcard[1], 
+			ip->wildcard[2],
+			ip->wildcard[3],
 			"");
 	printf("%02x.%02x.%02x.%02x%5s\n", 
-			ip->wildcard[INDX_FRST_OCT], 
-			ip->wildcard[INDX_SCND_OCT], 
-			ip->wildcard[INDX_THRD_OCT],
-			ip->wildcard[INDX_FRTH_OCT],
+			ip->wildcard[0], 
+			ip->wildcard[1], 
+			ip->wildcard[2],
+			ip->wildcard[3],
 			"");
 	
 	/* Print network */
-	printf("%-15s%03d.%03d.%03d.%03d%5s",
-		    "Network",	
-			ip->network[INDX_FRST_OCT], 
-			ip->network[INDX_SCND_OCT], 
-			ip->network[INDX_THRD_OCT],
-			ip->network[INDX_FRTH_OCT],
-			"");
-	printf("%08b.%08b.%08b.%08b%5s", 
-			ip->network[INDX_FRST_OCT], 
-			ip->network[INDX_SCND_OCT], 
-			ip->network[INDX_THRD_OCT],
-			ip->network[INDX_FRTH_OCT],
-			"");
-	printf("%02x.%02x.%02x.%02x%5s\n", 
-			ip->network[INDX_FRST_OCT], 
-			ip->network[INDX_SCND_OCT], 
-			ip->network[INDX_THRD_OCT],
-			ip->network[INDX_FRTH_OCT],
-			"");
+	if(ip->is_point_to_point || ip->is_host_route) {
+		printf("%-15s%s\n", "Network", "No network");
+	}
+	else {
+		printf("%-15s%03d.%03d.%03d.%03d%5s",
+				"Network",	
+				ip->network[0], 
+				ip->network[1], 
+				ip->network[2],
+				ip->network[3],
+				"");
+		printf("%08b.%08b.%08b.%08b%5s", 
+				ip->network[0], 
+				ip->network[1], 
+				ip->network[2],
+				ip->network[3],
+				"");
+		printf("%02x.%02x.%02x.%02x%5s\n", 
+				ip->network[0], 
+				ip->network[1], 
+				ip->network[2],
+				ip->network[3],
+				"");
+	}
 
 	/* Print broadcast */
-	if(ip->is_point_to_point) {
-		printf("%-15s%s\n", "Broadcast", "No broadcast (point-to-point)");
+	if(ip->is_point_to_point || ip->is_host_route) {
+		printf("%-15s%s\n", "Broadcast", "No broadcast");
 	}
 	else {
 		printf("%-15s%03d.%03d.%03d.%03d%5s",
 				"Broadcast",	
-				ip->broadcast[INDX_FRST_OCT], 
-				ip->broadcast[INDX_SCND_OCT], 
-				ip->broadcast[INDX_THRD_OCT],
-				ip->broadcast[INDX_FRTH_OCT],
+				ip->broadcast[0], 
+				ip->broadcast[1], 
+				ip->broadcast[2],
+				ip->broadcast[3],
 				"");
 		printf("%08b.%08b.%08b.%08b%5s", 
-				ip->broadcast[INDX_FRST_OCT], 
-				ip->broadcast[INDX_SCND_OCT], 
-				ip->broadcast[INDX_THRD_OCT],
-				ip->broadcast[INDX_FRTH_OCT],
+				ip->broadcast[0], 
+				ip->broadcast[1], 
+				ip->broadcast[2],
+				ip->broadcast[3],
 				"");
 		printf("%02x.%02x.%02x.%02x%5s\n", 
-				ip->broadcast[INDX_FRST_OCT], 
-				ip->broadcast[INDX_SCND_OCT], 
-				ip->broadcast[INDX_THRD_OCT],
-				ip->broadcast[INDX_FRTH_OCT],
+				ip->broadcast[0], 
+				ip->broadcast[1], 
+				ip->broadcast[2],
+				ip->broadcast[3],
 				"");
 	}
 	
-	if(ip->is_host_route) {
-		printf("%-15s%s\n", "Hostmin", "No usable hosts");
-		printf("%-15s%s\n", "Hostmax", "No usable hosts");
-	}
-	else {
-		/* Print Hostmin */
-		printf("%-15s%03d.%03d.%03d.%03d%5s",
-				"Hostmin",	
-				ip->hostmin[INDX_FRST_OCT], 
-				ip->hostmin[INDX_SCND_OCT], 
-				ip->hostmin[INDX_THRD_OCT],
-				ip->hostmin[INDX_FRTH_OCT],
-				"");
-		printf("%08b.%08b.%08b.%08b%5s", 
-				ip->hostmin[INDX_FRST_OCT], 
-				ip->hostmin[INDX_SCND_OCT], 
-				ip->hostmin[INDX_THRD_OCT],
-				ip->hostmin[INDX_FRTH_OCT],
-				"");
-		printf("%02x.%02x.%02x.%02x%5s\n", 
-				ip->hostmin[INDX_FRST_OCT], 
-				ip->hostmin[INDX_SCND_OCT], 
-				ip->hostmin[INDX_THRD_OCT],
-				ip->hostmin[INDX_FRTH_OCT],
-				"");
-		
-		/* Print Hostmax */
-		printf("%-15s%03d.%03d.%03d.%03d%5s",
-				"Hostmax",	
-				ip->hostmax[INDX_FRST_OCT], 
-				ip->hostmax[INDX_SCND_OCT], 
-				ip->hostmax[INDX_THRD_OCT],
-				ip->hostmax[INDX_FRTH_OCT],
-				"");
-		printf("%08b.%08b.%08b.%08b%5s", 
-				ip->hostmax[INDX_FRST_OCT], 
-				ip->hostmax[INDX_SCND_OCT], 
-				ip->hostmax[INDX_THRD_OCT],
-				ip->hostmax[INDX_FRTH_OCT],
-				"");
-		printf("%02x.%02x.%02x.%02x%5s\n", 
-				ip->hostmax[INDX_FRST_OCT], 
-				ip->hostmax[INDX_SCND_OCT], 
-				ip->hostmax[INDX_THRD_OCT],
-				ip->hostmax[INDX_FRTH_OCT],
-				"");
-	}
+	/* Print hostmin */
+	printf("%-15s%03d.%03d.%03d.%03d%5s",
+			"Hostmin",	
+			ip->hostmin[0], 
+			ip->hostmin[1], 
+			ip->hostmin[2],
+			ip->hostmin[3],
+			"");
+	printf("%08b.%08b.%08b.%08b%5s", 
+			ip->hostmin[0], 
+			ip->hostmin[1], 
+			ip->hostmin[2],
+			ip->hostmin[3],
+			"");
+	printf("%02x.%02x.%02x.%02x%5s\n", 
+			ip->hostmin[0], 
+			ip->hostmin[1], 
+			ip->hostmin[2],
+			ip->hostmin[3],
+			"");
+	
+	/* Print hostmax */
+	printf("%-15s%03d.%03d.%03d.%03d%5s",
+			"Hostmax",	
+			ip->hostmax[0], 
+			ip->hostmax[1], 
+			ip->hostmax[2],
+			ip->hostmax[3],
+			"");
+	printf("%08b.%08b.%08b.%08b%5s", 
+			ip->hostmax[0], 
+			ip->hostmax[1], 
+			ip->hostmax[2],
+			ip->hostmax[3],
+			"");
+	printf("%02x.%02x.%02x.%02x%5s\n", 
+			ip->hostmax[0], 
+			ip->hostmax[1], 
+			ip->hostmax[2],
+			ip->hostmax[3],
+			"");
+	
+	/* Print number of hosts */
+	printf("%-15s%ld\n", "Hosts", ip->hostcnt);
 
-	/* Print quantity hosts */
-	printf("%-15s%ld\n", "Hosts", ip->qt_hosts);
+	return;
 }
