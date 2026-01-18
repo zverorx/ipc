@@ -147,28 +147,32 @@ ipv4_t *fill_wildcard(ipv4_t *ip)
 	return ip;
 }
 
-ipv4_t *fill_network(ipv4_t *ip_ptr)
+ipv4_t *fill_network(ipv4_t *ip)
 {
-	if(!ip_ptr->addr_set || !ip_ptr->netmask_set) {
-		return NULL;
-	}
+	if (!ip) { return NULL; }
+	if (!ip->addr_set || !ip->netmask_set) { return NULL; }
 	
-	for(int i = 0; i < OCTET_COUNT; i++) {
-		ip_ptr->network[i] = ip_ptr->addr[i] & ip_ptr->netmask[i];
+	for (int i = 0; i < 4; i++) {
+		ip->network[i] = ip->addr[i] & ip->netmask[i];
 	}
-	return ip_ptr;
+
+	ip->network_set = 1;
+
+	return ip;
 }
 
-ipv4_t *fill_broadcast(ipv4_t *ip_ptr)
+ipv4_t *fill_broadcast(ipv4_t *ip)
 {
-	if(!ip_ptr->network_set || !ip_ptr->wildcard_set || ip_ptr->is_point_to_point) {
-		return NULL;
-	}
+	if (!ip) { return NULL; }
+	if (!ip->network_set || !ip->wildcard_set) { return NULL; }
 	
-	for(int i = 0; i < OCTET_COUNT; i++) {
-		ip_ptr->broadcast[i] = ip_ptr->network[i] | ip_ptr->wildcard[i];
+	for (int i = 0; i < 4; i++) {
+		ip->broadcast[i] = ip->network[i] | ip->wildcard[i];
 	}
-	return ip_ptr;
+
+	ip->broadcast_set = 1;
+
+	return ip;
 }
 
 ipv4_t *fill_hostmin(ipv4_t *ip_ptr)

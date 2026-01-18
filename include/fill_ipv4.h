@@ -97,32 +97,36 @@ ipv4_t *fill_netmask(ipv4_t *ip);
 ipv4_t *fill_wildcard(ipv4_t *ip);
 
 /**
- * @brief Assigns to the network field of the ip_v4 structure.
- * @param ip_ptr A reference to a structure storing IP data.
- * @return Address of the ip_v4 structure, if the network field can be assigned a value, otherwise NULL.
- * @pre The addr_set and netmask_set flags in ip_ptr must be set to 1.
- * @post If successful, the network field in ip_ptr is populated.
- * @note This function calculates the network address by performing 
- *     a bitwise AND operation between the IP address and the netmask.
- * @warning This function does not modify the network_set flag. 
- *     The calling code must set ip_ptr->network_set = 1 upon successful return.
+ * @brief Fill network based on the addr and netmask.
+ * 
+ * @param ip Pointer to the ipv4_t structure to fill.
+ * 
+ * @return Pointer to the ipv4_t structure, otherwise NULL.
+ * 
+ * @pre The addr_set and netmask_set flags in the ipv4_t structure must be set to 1.
+ * 
+ * @note On success, the network_set field is set to 1.
+ * 
+ * @see fill_addr
+ * @see fill_netmask
  */
-ipv4_t *fill_network(ipv4_t *ip_ptr);
+ipv4_t *fill_network(ipv4_t *ip);
 
 /**
- * @brief Assigns to the broadcast field of the ip_v4 structure.
- * @param ip_ptr A reference to a structure storing IP data.
- * @return Address of the ip_v4 structure, if the broadcast field can be assigned a value, otherwise NULL.
- * @pre The network_set and wildcard_set flags in ip_ptr must be set to 1.
- * @pre The bitmask must not be 31 (/31 networks do not have a broadcast address).
- * @post If successful, the broadcast field in ip_ptr is populated.
- * @note This function calculates the broadcast address by performing 
- *     a bitwise OR operation between the network address and the wildcard mask.
- * @warning This function does not modify the broadcast_set flag. 
- *     The calling code must set ip_ptr->broadcast_set = 1 upon successful return.
- * @warning This function will return NULL for /31 networks (bitmask == 31) as they do not have a broadcast address.
+ * @brief Fill broadcast based on the network and wildcard.
+ * 
+ * @param ip Pointer to the ipv4_t structure to fill.
+ * 
+ * @return Pointer to the ipv4_t structure, otherwise NULL.
+ * 
+ * @pre The network_set and wildcard_set flags in the ipv4_t structure must be set to 1.
+ * 
+ * @note On success, the broadcast_set field is set to 1.
+ * 
+ * @see fill_network
+ * @see fill_wildcard
  */
-ipv4_t *fill_broadcast(ipv4_t *ip_ptr);
+ipv4_t *fill_broadcast(ipv4_t *ip);
 
 /**
  * @brief Assigns to the hostmin field of the ip_v4 structure.
