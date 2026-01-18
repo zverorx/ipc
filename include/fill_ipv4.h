@@ -156,11 +156,16 @@ ipv4_t *fill_hostmin(ipv4_t *ip);
 ipv4_t *fill_hostmax(ipv4_t *ip);
 
 /**
- * @brief Assigns to the hosts field of the ip_v4 structure.
- * @param ip_ptr A reference to a structure storing IP data.
- * @return Address of the ip_v4 structure, if the hosts field can be assigned a value, otherwise NULL.
- * @pre The bimask_set flag in ip_ptr must be set to 1.
+ * @brief Fill number of hosts based on the bitmask.
+ * 
+ * @param ip Pointer to the ipv4_t structure to fill.
+ * 
+ * @return Pointer to the ipv4_t structure, otherwise NULL.
+ * 
+ * @pre The bitmask_set flag in the ipv4_t structure must be set to 1.
+ * 
+ * @see fill_bitmask
  */
-ipv4_t *fill_qt_hosts(ipv4_t *ip_ptr);
+ipv4_t *fill_hostcnt(ipv4_t *ip);
 
 #endif /* FILL_IPV4_H_SENTRY */

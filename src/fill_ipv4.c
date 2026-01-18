@@ -204,7 +204,7 @@ ipv4_t *fill_hostmax(ipv4_t *ip)
 		ip->hostmax[3] -= 1;
 	} 
 	else {
-		for(int i = 0; i < 4; i++) {
+		for (int i = 0; i < 4; i++) {
 			ip->hostmax[i] = ip->network[i];
 		}
 
@@ -216,29 +216,30 @@ ipv4_t *fill_hostmax(ipv4_t *ip)
 	return ip;
 }
 
-ipv4_t *fill_qt_hosts(ipv4_t *ip_ptr)
+ipv4_t *fill_hostcnt(ipv4_t *ip)
 {
 	uint8_t bits_for_host;
-	uint64_t qt_hosts = 1;
+	uint64_t host_cnt = 1;
 
-	if(!ip_ptr->bitmask_set) {
-		return NULL;
-	}
-	bits_for_host = BITS_IN_IP - ip_ptr->bitmask;
-	for(int i = 0; i < bits_for_host; i++) {
-		qt_hosts *= 2;
-	}
+	if (!ip) { return NULL; }
+	if (!ip->bitmask_set) { return NULL; }
 
-	if(!bits_for_host) {
-		ip_ptr->qt_hosts = 0;
-	}
-	else if(bits_for_host == 1) {
-		/*point-to-point*/
-		ip_ptr->qt_hosts = 2;
-	}
-	else {
-		ip_ptr->qt_hosts = qt_hosts - 2;
+	if (ip->is_host_route) {
+		ip->hostcnt = 1;
+		return ip;
 	}
 
-	return ip_ptr;
+	if (ip->is_point_to_point) {
+		ip->hostcnt = 2;
+		return ip;
+	}
+
+	bits_for_host = 32 - ip->bitmask;
+	for (int i = 0; i < bits_for_host; i++) {
+		host_cnt *= 2;
+	}
+
+	ip->hostcnt = host_cnt - 2; /* network and broadcast */
+
+	return ip;
 }
