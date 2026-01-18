@@ -38,10 +38,10 @@ typedef struct ipv4 {
     uint8_t netmask[OCTET_COUNT];   /**< Subnet mask (e.g. [255][255][255][0]) */
     uint8_t wildcard[OCTET_COUNT];  /**< Inverse mask */
     uint8_t network[OCTET_COUNT];   /**< Network address */
-    uint8_t broadcast[OCTET_COUNT]; /**< Broadcast (not for /31) */
+    uint8_t broadcast[OCTET_COUNT]; /**< Broadcast address */
     uint8_t hostmin[OCTET_COUNT];   /**< First usable host */
     uint8_t hostmax[OCTET_COUNT];   /**< Last usable host */
-    uint64_t qt_hosts;              /**< Total host addresses */
+    uint64_t hostcnt;               /**< Total host addresses */
 
     uint8_t addr_set;               /**< Address valid */
     uint8_t bitmask_set;            /**< Bitmask valid */
