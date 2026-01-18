@@ -185,7 +185,7 @@ ipv4_t *fill_hostmin(ipv4_t *ip)
 	}
 
 	if (!ip->is_host_route && !ip->is_point_to_point) {
-		ip->network[3] += 1;
+		ip->hostmin[3] += 1;
 	}
 
 	return ip;
