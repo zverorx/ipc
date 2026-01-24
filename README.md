@@ -2,6 +2,10 @@
 
 IP calculator
 
+> The project is under development.
+
+> To use the old functionality, specify `-a` as the first parameter.
+
 ## Prerequisites
 
 Check for the following programs:
