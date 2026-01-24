@@ -14,11 +14,13 @@ BINDIR = bin
 
 HEADERS = $(INCDIR)/ipv4_t.h	\
 		  $(INCDIR)/fill_ipv4.h	\
-		  $(INCDIR)/analysis.h	
+		  $(INCDIR)/analysis.h	\
+		  $(INCDIR)/subnet.h
 
 SOURCES = $(SRCDIR)/main.c		\
 		  $(SRCDIR)/fill_ipv4.c	\
-		  $(SRCDIR)/analysis.c	
+		  $(SRCDIR)/analysis.c	\
+		  $(SRCDIR)/subnet.c	
 
 OBJECTS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SOURCES))
 
