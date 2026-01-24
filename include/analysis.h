@@ -31,6 +31,6 @@
  * 
  * @return EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
-int analysis_start(ipv4_t *ip, char *ip_str);
+int analysis_start(ipv4_t *ip, const char *ip_str);
 
 #endif /* ANALYSIS_H_SENTRY */

@@ -38,7 +38,7 @@
  */
 static void print_ipv4(const ipv4_t *ip);
 
-int analysis_start(ipv4_t *ip, char *ip_str)
+int analysis_start(ipv4_t *ip, const char *ip_str)
 {
 	if (!ip) { return EXIT_FAILURE; }
 	if (!ip_str) { return EXIT_FAILURE; }
