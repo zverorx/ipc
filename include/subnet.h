@@ -28,12 +28,12 @@
 /**
  * @brief Dividing the network into subnets.
  *
- * @param ip Structure with address data. 
+ * @param ip Structure with address data.
  * @param ip_str IP address in CIDR notation.
- * @param arr Stores the parts into which the network should be divided. 
- *            The size of the array is the number of parts, the value of 
- *            each element is the number of hosts in the part. 
- *            If the array is initialized with zeros, then the division 
+ * @param arr Stores the parts into which the network should be divided.
+ *            The size of the array is the number of parts, the value of
+ *            each element is the number of hosts in the part.
+ *            If the array is initialized with zeros, then the division
  *            occurs into equal parts.
  * @param len Size of arr.
  * 
