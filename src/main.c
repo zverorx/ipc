@@ -119,12 +119,13 @@ static int process_args(int argc, char **argv,
 	if (!ip_str) { return -1; }
 	if (!arr_len) { return -1; }
 
-	if (argc < 5) { return -1; }
-
 	/* Checking the first parameter */
 	if (strcmp(argv[1], "-a") == 0) { *mode = analysis; }
 	else if (strcmp(argv[1], "-s") == 0) { *mode = subnetting; }
 	else { return -1; }
+
+	if (*mode == analysis && argc < 3) { return -1; }
+	if (*mode == subnetting && argc < 5) { return -1; }
 
 	/* Checking the second parameter */
 	if (argv[2]) { *ip_str = strdup(argv[2]); }
