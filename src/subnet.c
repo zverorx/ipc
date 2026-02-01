@@ -25,18 +25,89 @@
 #include "ipv4_t.h"
 #include "fill_ipv4.h"
 #include "subnet.h"
+#include "subnet_list.h"
+
+/**
+ * 
+ */
+static ipv4_t *switch_subnet(ipv4_t *ip);
+
+/**
+ * @brief Calculates needed bits to fit count_subnets.
+ * @param count_subnets Required number of subnets.
+ * @return Minimum bit count, or 0 for <=1 subnet.
+ */
+static int expand_bitmask(int count_subnets);
 
 int subnetting_start(ipv4_t *ip, const char *ip_str, int *arr, size_t len)
 {
-    if (!ip || !ip_str || !arr || !len) { goto handle_error; }
+    struct subnet *head = calloc(1, sizeof(struct subnet));
+    struct subnet *new_node = NULL;
 
-    fputs("subnetting start\n", stderr);
-    for (int i = 0; i < len; i++) {
-        fprintf(stderr, "arr[%d] = %d\n", i, arr[i]);
+    if (!ip || !ip_str || !arr || !len || !head) { return EXIT_FAILURE; }
+
+	if (!fill_addr(ip, ip_str)) { goto handle_error; }
+	if (!fill_bitmask(ip, ip_str)) { goto handle_error; }
+    ip->bitmask += expand_bitmask(len);
+	if (!fill_netmask(ip)) { goto handle_error; }
+	if (!fill_wildcard(ip)) { goto handle_error; }
+	if (!fill_network(ip)) { goto handle_error; }
+	if (!fill_broadcast(ip)) { goto handle_error; }
+
+    init_node(head, ip);
+
+    for (int i = 0; i < len - 1; i++) {
+        if (!switch_subnet(ip)) { goto handle_error; }
+	    if (!fill_broadcast(ip)) { goto handle_error; }
+
+        new_node = calloc(1, sizeof(struct subnet));
+        if (!new_node) { goto handle_error; }
+
+        init_node(new_node, ip);
+        add_to_list(head, new_node);
     }
+
+    print_list(head);
+    remove_list(head);
 
     return EXIT_SUCCESS;
 
     handle_error:
+        remove_list(head);
         return EXIT_FAILURE;
+}
+
+static ipv4_t *switch_subnet(ipv4_t *ip)
+{
+    int host_bit;
+    int last_net_octet;
+
+    if (!ip) { return NULL; }
+    if (!ip->network_set) { return NULL; }
+
+    host_bit = 32 - ip->bitmask;
+    last_net_octet = ip->bitmask / 8;
+
+    ip->network[last_net_octet] += 1 << host_bit; /* FIXME */
+
+    return ip;
+}
+
+static int expand_bitmask(int count_subnets)
+{
+    int res_exp = 1;
+    int pow;
+
+    if (count_subnets <= 1) { return 0; }
+
+    for (pow = 1; pow < count_subnets; pow++) {
+        res_exp = 1;
+        for (int iter = pow; iter > 0; iter--) {
+            res_exp *= 2;
+        }
+
+        if (res_exp >= count_subnets) { break; }
+    }
+
+    return pow;
 }
