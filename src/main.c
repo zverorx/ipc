@@ -150,7 +150,8 @@ static int process_args(int argc, char **argv,
 		for (int i = 4, j = 0; i < argc; i++, j++) {
 			errno = 0;
 			part = strtol(argv[i], &endptr, 10);
-			if (errno == ERANGE || *endptr != '\0') { goto handle_error; }
+			if (errno == ERANGE || *endptr != '\0' || part <= 0) 
+				{ goto handle_error; }
 			(*arg_arr)[j] = (int) part;
 		}
 	}
