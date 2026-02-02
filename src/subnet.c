@@ -41,14 +41,18 @@ static int expand_bitmask(int count_subnets);
 
 int subnetting_start(ipv4_t *ip, const char *ip_str, int *arr, size_t len)
 {
-    struct subnet *head = calloc(1, sizeof(struct subnet));
+    struct subnet *head = NULL;
     struct subnet *new_node = NULL;
 
-    if (!ip || !ip_str || !arr || !len || !head) { return EXIT_FAILURE; }
+    if (!ip || !ip_str || !arr || !len) { return EXIT_FAILURE; }
+
+    head = calloc(1, sizeof(struct subnet));
+    if (!head) { goto handle_error; }
 
 	if (!fill_addr(ip, ip_str)) { goto handle_error; }
 	if (!fill_bitmask(ip, ip_str)) { goto handle_error; }
     ip->bitmask += expand_bitmask(len);
+    if (32 - ip->bitmask < 1) { goto handle_error; } 
 	if (!fill_netmask(ip)) { goto handle_error; }
 	if (!fill_wildcard(ip)) { goto handle_error; }
 	if (!fill_network(ip)) { goto handle_error; }
