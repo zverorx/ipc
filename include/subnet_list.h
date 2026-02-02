@@ -30,6 +30,7 @@
 struct subnet {
     uint8_t minaddr[OCTET_COUNT];   /**< Minimum subnet address */
     uint8_t maxaddr[OCTET_COUNT];   /**< Maximum subnet address */
+    uint8_t bitmask;                /**< Mask length (e.g. 24) */
     struct subnet *next;            /**< Next node */
 };
 

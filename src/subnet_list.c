@@ -59,6 +59,8 @@ int init_node(struct subnet *node, ipv4_t *ip)
 {
     if (!node || !ip) { return -1; }
 
+    node->bitmask = ip->bitmask;
+
     for (int i = 0; i < 4; i++) {
         node->minaddr[i] = ip->network[i];
         node->maxaddr[i] = ip->broadcast[i];
@@ -70,15 +72,23 @@ int init_node(struct subnet *node, ipv4_t *ip)
 void print_list(const struct subnet *head)
 {
     if (!head) { return; }
-    while (head) {
-        printf("%d.%d.%d.%d - %d.%d.%d.%d\n", head->minaddr[0],
-                                              head->minaddr[1],
-                                              head->minaddr[2],
-                                              head->minaddr[3],
-                                              head->maxaddr[0],
-                                              head->maxaddr[1],
-                                              head->maxaddr[2],
-                                              head->maxaddr[3]);
+    
+	printf("%5s%-20s%-20s%-11s\n", "", "MIN", "MAX", "MASK");
+
+    for (int i = 0; head; i++) {
+	    printf("%-5d%03d.%03d.%03d.%03d%5s", i,
+                                             head->minaddr[0],
+                                             head->minaddr[1],
+                                             head->minaddr[2],
+                                             head->minaddr[3],
+                                             "");
+	    printf("%03d.%03d.%03d.%03d%5s", head->maxaddr[0],
+                                         head->maxaddr[1],
+                                         head->maxaddr[2],
+                                         head->maxaddr[3],
+                                         "");
+        printf("%d\n", head->bitmask);
+
         head = head->next;
     }
 
