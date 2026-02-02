@@ -100,7 +100,7 @@ int main(int argc, char **argv)
 			  "\tipc <-s> <ip/bitmask> <--equal> <count>\n"
 			  "\tipc <-s> <ip/bitmask> <--part> <uint, ...>\n\n"
 			  "-a\tanalysis\n"
-			  "-s\tsubnetting\n\n"
+			  "-s\tsubnetting\n"
 			  "\t--equal\tsplitting into equal parts\n"
 			  "\t--part\tsplit into pieces of different sizes\n", stderr);
 		return EXIT_FAILURE;
