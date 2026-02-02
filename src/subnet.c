@@ -28,7 +28,10 @@
 #include "subnet_list.h"
 
 /**
- * 
+ * @brief Moves the network address to the start of the next subnet. 
+ * @param ip Structure with address data.
+ * @return Pointer to modified structure, or NULL otherwise.
+ * @pre The network_set flag in the ipv4_t structure must be set to 1.
  */
 static ipv4_t *switch_subnet(ipv4_t *ip);
 
@@ -83,16 +86,23 @@ int subnetting_start(ipv4_t *ip, const char *ip_str, int *arr, size_t len)
 
 static ipv4_t *switch_subnet(ipv4_t *ip)
 {
-    int host_bit;
-    int last_net_octet;
+    int host_bit; 
+    uint32_t net_num;
 
     if (!ip) { return NULL; }
     if (!ip->network_set) { return NULL; }
 
-    host_bit = 32 - ip->bitmask;
-    last_net_octet = ip->bitmask / 8;
+    net_num = (ip->network[0] << 24) | (ip->network[1] << 16) |
+              (ip->network[2] << 8) | (ip->network[3]);
 
-    ip->network[last_net_octet] += 1 << host_bit; /* FIXME */
+    host_bit = 32 - ip->bitmask;
+
+    net_num += 1 << host_bit;
+
+    ip->network[0] = net_num >> 24;
+    ip->network[1] = net_num >> 16 & 0xFF;
+    ip->network[2] = net_num >> 8 & 0xFF;
+    ip->network[3] = net_num & 0xFF;
 
     return ip;
 }
