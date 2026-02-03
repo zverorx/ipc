@@ -45,7 +45,7 @@ static int equal_opt_handler(ipv4_t *ip, const char *ip_str,
  * @param ip_str IP address in CIDR notation.
  * @param arr Stores the parts into which the network should be divided.
  *            The size of the array is the number of parts, the value of
- *            each element is the number of address in the part.
+ *            each element is the number of addresses in the part.
  * @param len Size of arr.
  * @param list_res List with calculation results.
  * 
@@ -74,7 +74,7 @@ static int get_min_power_of_two(int target);
  * 
  * @param arr Stores the parts into which the network should be divided.
  *            The size of the array is the number of parts, the value of
- *            each element is the number of address in the part.
+ *            each element is the number of addresses in the part.
  * @param len Size of arr.
  * @param ip Structure with address data.
  * 
