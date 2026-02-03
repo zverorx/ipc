@@ -28,6 +28,19 @@
 #include "subnet_list.h"
 
 /**
+ * @brief Dividing the network into equal subnets.
+ * 
+ * @param ip Structure with address data.
+ * @param ip_str IP address in CIDR notation.
+ * @param num_of_subnets Number of subnets required.
+ * @param list_res List with calculation results.
+ * 
+ * @return EXIT_SUCCESS on success, EXIT_FAILURE on error.
+ */
+static int equal_opt_handler(ipv4_t *ip, const char *ip_str, 
+                             size_t num_of_subnets, struct subnet *list_res);
+
+/**
  * @brief Moves the network address to the start of the next subnet. 
  * @param ip Structure with address data.
  * @return Pointer to modified structure, or NULL otherwise.
@@ -45,43 +58,56 @@ static int get_min_power_of_two(int target);
 int subnetting_start(ipv4_t *ip, const char *ip_str, int *arr, size_t len)
 {
     struct subnet *head = NULL;
-    struct subnet *new_node = NULL;
+    int res_opt;
 
     if (!ip || !ip_str || !arr || !len) { return EXIT_FAILURE; }
 
     head = calloc(1, sizeof(struct subnet));
-    if (!head) { goto handle_error; }
+    if (!head) { return EXIT_FAILURE; }
 
-	if (!fill_addr(ip, ip_str)) { goto handle_error; }
-	if (!fill_bitmask(ip, ip_str)) { goto handle_error; }
-    ip->bitmask += get_min_power_of_two(len);
-    if (32 - ip->bitmask < 1) { goto handle_error; } 
-	if (!fill_netmask(ip)) { goto handle_error; }
-	if (!fill_wildcard(ip)) { goto handle_error; }
-	if (!fill_network(ip)) { goto handle_error; }
-	if (!fill_broadcast(ip)) { goto handle_error; }
-
-    init_node(head, ip);
-
-    for (int i = 0; i < len - 1; i++) {
-        if (!switch_subnet(ip)) { goto handle_error; }
-	    if (!fill_broadcast(ip)) { goto handle_error; }
-
-        new_node = calloc(1, sizeof(struct subnet));
-        if (!new_node) { goto handle_error; }
-
-        init_node(new_node, ip);
-        add_to_list(head, new_node);
+    if (arr[0] == '\0') { 
+        res_opt = equal_opt_handler(ip, ip_str, len, head);
+    }
+    else { 
+        /* res_opt = part_opt_handler(); */
     }
 
-    print_list(head);
+    if (res_opt == EXIT_SUCCESS) { print_list(head); }
     remove_list(head);
 
-    return EXIT_SUCCESS;
+    return res_opt;
+}
 
-    handle_error:
-        remove_list(head);
-        return EXIT_FAILURE;
+static int equal_opt_handler(ipv4_t *ip, const char *ip_str, 
+                             size_t num_of_subnets, struct subnet *list_res)
+{
+    struct subnet *new_node = NULL;
+
+    if (!ip || !ip_str || !num_of_subnets || !list_res) { return EXIT_FAILURE; }
+
+	if (!fill_addr(ip, ip_str)) { return EXIT_FAILURE; }
+	if (!fill_bitmask(ip, ip_str)) { return EXIT_FAILURE; }
+    ip->bitmask += get_min_power_of_two(num_of_subnets);
+    if (32 - ip->bitmask < 1) { return EXIT_FAILURE; }
+    if (!fill_netmask(ip)) { return EXIT_FAILURE; }
+	if (!fill_wildcard(ip)) { return EXIT_FAILURE; }
+	if (!fill_network(ip)) { return EXIT_FAILURE; }
+	if (!fill_broadcast(ip)) { return EXIT_FAILURE; }
+
+    init_node(list_res, ip);
+
+    for (int i = 0; i < num_of_subnets - 1; i++) {
+        if (!switch_subnet(ip)){ return EXIT_FAILURE; }
+	    if (!fill_broadcast(ip)){ return EXIT_FAILURE; }
+
+        new_node = calloc(1, sizeof(struct subnet));
+        if (!new_node){ return EXIT_FAILURE; }
+
+        init_node(new_node, ip);
+        add_to_list(list_res, new_node);
+    }
+
+    return EXIT_SUCCESS;
 }
 
 static ipv4_t *switch_subnet(ipv4_t *ip)
