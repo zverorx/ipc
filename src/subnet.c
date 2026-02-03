@@ -39,6 +39,20 @@
  */
 static int equal_opt_handler(ipv4_t *ip, const char *ip_str, 
                              size_t num_of_subnets, struct subnet *list_res);
+/**
+ * @brief Dividing the network into different subnets. 
+ * @param ip Structure with address data.
+ * @param ip_str IP address in CIDR notation.
+ * @param arr Stores the parts into which the network should be divided.
+ *            The size of the array is the number of parts, the value of
+ *            each element is the number of address in the part.
+ * @param len Size of arr.
+ * @param list_res List with calculation results.
+ * 
+ * @return EXIT_SUCCESS on success, EXIT_FAILURE on error.
+ */
+static int part_opt_handler(ipv4_t *ip, const char *ip_str, int *arr, 
+                            size_t len, struct subnet *list_res);
 
 /**
  * @brief Moves the network address to the start of the next subnet. 
@@ -55,6 +69,19 @@ static ipv4_t *switch_subnet(ipv4_t *ip);
  */
 static int get_min_power_of_two(int target);
 
+/**
+ * @brief Verify if requested subnet partitions fit in the IPv4 network.
+ * 
+ * @param arr Stores the parts into which the network should be divided.
+ *            The size of the array is the number of parts, the value of
+ *            each element is the number of address in the part.
+ * @param len Size of arr.
+ * @param ip Structure with address data.
+ * 
+ * @pre The bitmask_set flag in the ipv4_t structure must be set to 1.
+ */
+static int parts_will_fit(int *arr, size_t len, ipv4_t *ip);
+
 int subnetting_start(ipv4_t *ip, const char *ip_str, int *arr, size_t len)
 {
     struct subnet *head = NULL;
@@ -69,7 +96,7 @@ int subnetting_start(ipv4_t *ip, const char *ip_str, int *arr, size_t len)
         res_opt = equal_opt_handler(ip, ip_str, len, head);
     }
     else { 
-        /* res_opt = part_opt_handler(); */
+        res_opt = part_opt_handler(ip, ip_str, arr, len, head);
     }
 
     if (res_opt == EXIT_SUCCESS) { print_list(head); }
@@ -99,6 +126,67 @@ static int equal_opt_handler(ipv4_t *ip, const char *ip_str,
     for (int i = 0; i < num_of_subnets - 1; i++) {
         if (!switch_subnet(ip)){ return EXIT_FAILURE; }
 	    if (!fill_broadcast(ip)){ return EXIT_FAILURE; }
+
+        new_node = calloc(1, sizeof(struct subnet));
+        if (!new_node){ return EXIT_FAILURE; }
+
+        init_node(new_node, ip);
+        add_to_list(list_res, new_node);
+    }
+
+    return EXIT_SUCCESS;
+}
+
+/* 
+ * For qsort in part_opt_handler.
+ * Sorts in descending order.
+ */
+static int compare(const void *p1, const void *p2) 
+{ return *(const int *) p2 - *(const int *) p1; }
+
+static int part_opt_handler(ipv4_t *ip, const char *ip_str, int *arr, 
+                            size_t len, struct subnet *list_res)
+{
+    struct subnet *new_node = NULL;
+    uint32_t net_num, brc_num;
+    uint8_t new_bitmask;
+
+    if (!ip || !ip_str || !arr || !len || !list_res) { return EXIT_FAILURE; }
+
+    qsort(arr, len, sizeof(int), compare);
+
+	if (!fill_addr(ip, ip_str)) { return EXIT_FAILURE; }
+	if (!fill_bitmask(ip, ip_str)) { return EXIT_FAILURE; }
+
+    if (!parts_will_fit(arr, len, ip)) { return EXIT_FAILURE; }
+
+    new_bitmask = 32 - get_min_power_of_two(arr[0]);
+    if (new_bitmask <= 0 || new_bitmask < ip->bitmask) { return EXIT_FAILURE; }
+    ip->bitmask = new_bitmask;
+
+    if (!fill_netmask(ip)) { return EXIT_FAILURE; }
+    if (!fill_wildcard(ip)) { return EXIT_FAILURE; }
+    if (!fill_network(ip)) { return EXIT_FAILURE; }
+    if (!fill_broadcast(ip)) { return EXIT_FAILURE; }
+    init_node(list_res, ip);
+
+    for (int i = 1; i < len; i++) {
+        brc_num = (ip->broadcast[0] << 24) | (ip->broadcast[1] << 16) |
+                  (ip->broadcast[2] << 8) | (ip->broadcast[3]);
+
+        net_num = brc_num + 1;
+
+        ip->network[0] = net_num >> 24;
+        ip->network[1] = net_num >> 16 & 0xFF;
+        ip->network[2] = net_num >> 8 & 0xFF;
+        ip->network[3] = net_num & 0xFF;
+
+        new_bitmask = 32 - get_min_power_of_two(arr[i]);
+        if (new_bitmask <= 0) { return EXIT_FAILURE; }
+        ip->bitmask = new_bitmask;
+
+        if (!fill_wildcard(ip)) { return EXIT_FAILURE; }
+        if (!fill_broadcast(ip)) { return EXIT_FAILURE; }
 
         new_node = calloc(1, sizeof(struct subnet));
         if (!new_node){ return EXIT_FAILURE; }
@@ -150,4 +238,26 @@ static int get_min_power_of_two(int target)
     }
 
     return pow;
+}
+
+static int parts_will_fit(int *arr, size_t len, ipv4_t *ip)
+{
+    int pow, host_bit, res_exp;
+    unsigned int demand = 0, available;
+
+    if (!arr || !len || !ip ) { return 0; }
+    if (!ip->bitmask_set) { return 0; }
+
+    for (int i = 0; i < len; i++) {
+        pow = get_min_power_of_two(arr[i]);
+        res_exp = 1 << pow;
+        demand += res_exp;
+    }
+
+    host_bit = 32 - ip->bitmask;
+    available = 1 << host_bit;
+
+    if (demand > available) { return 0; }
+
+    return 1;
 }
