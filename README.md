@@ -2,38 +2,40 @@
 
 IP calculator
 
-> The project is under development.
-
-> To use the old functionality, specify `-a` as the first parameter.
-
 ## Prerequisites
 
 Check for the following programs:
 
 * `gcc`
 * `make`
-* `curl`
-* `unzip`
 
 ## Receiving the project
 
+### Download the archive:
+
 ```bash
-curl -L -o ipc.zip https://github.com/zverorx/ipc/archive/refs/tags/v1.zip
+curl -L -o ipc.zip https://github.com/zverorx/ipc/archive/refs/tags/v2.zip
 ```
 
 ```bash
 unzip ipc.zip
 ```
 
-## Compilation and installation
-
-Go to the source directory, and run the following commands:
+### Clone a repository:
 
 ```bash
-make && sudo make install
+git clone https://github.com/zverorx/ipc.git
 ```
 
-To find out more about Makefile features, run 
+## Compilation
+
+Go to the source directory, and run:
+
+```bash
+make
+```
+
+To find out more about Makefile features, run:
 
 ```bash
 make help
@@ -41,19 +43,27 @@ make help
 
 ## Usage
 
-The command takes a string in IP/BITMASK format as a parameter.
+```
+ipc <-a> <ip/bitmask>
+```
 
-If the compilation and installation stage was successful, you can run in the terminal:
+```
+ipc <-s> <ip/bitmask> <--equal> <count>
+```
+
+```
+ipc <-s> <ip/bitmask> <--part> <uint, ...>
+```
+
+### For example
+
+#### Analysis
 
 ```bash
-ipc 192.168.1.1/24
-```
+$ ./ipc -a 192.168.1.1/24
 
-The result of such a command will be:
-
-```
                DEC                 BIN                                     HEX        
-IP             192.168.001.001     11000000.10101000.00000001.00000001     c0.a8.01.01
+Addr           192.168.001.001     11000000.10101000.00000001.00000001     c0.a8.01.01
 Bitmask        24
 Netmask        255.255.255.000     11111111.11111111.11111111.00000000     ff.ff.ff.00     
 Wildcard       000.000.000.255     00000000.00000000.00000000.11111111     00.00.00.ff     
@@ -62,6 +72,31 @@ Broadcast      192.168.001.255     11000000.10101000.00000001.11111111     c0.a8
 Hostmin        192.168.001.001     11000000.10101000.00000001.00000001     c0.a8.01.01     
 Hostmax        192.168.001.254     11000000.10101000.00000001.11111110     c0.a8.01.fe     
 Hosts          254
+```
+
+#### Splitting into equal subnets
+
+```bash
+$ ./ipc -s 192.168.1.1/24 --equal 5
+
+     MIN                 MAX                 MASK       
+0    192.168.001.000     192.168.001.031     27
+1    192.168.001.032     192.168.001.063     27
+2    192.168.001.064     192.168.001.095     27
+3    192.168.001.096     192.168.001.127     27
+4    192.168.001.128     192.168.001.159     27
+```
+
+#### Split into custom-sized subnets
+
+```bash
+$ ./ipc -s 192.168.1.1/24 --part 2 6 16 10
+
+     MIN                 MAX                 MASK       
+0    192.168.001.000     192.168.001.015     28
+1    192.168.001.016     192.168.001.031     28
+2    192.168.001.032     192.168.001.039     29
+3    192.168.001.040     192.168.001.041     31
 ```
 
 ## License
