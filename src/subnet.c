@@ -36,11 +36,11 @@
 static ipv4_t *switch_subnet(ipv4_t *ip);
 
 /**
- * @brief Calculates needed bits to fit count_subnets.
- * @param count_subnets Required number of subnets.
- * @return Minimum bit count, or 0 for <=1 subnet.
+ * @brief Calculates the minimal power-of-two exponent to accommodate a given number.
+ * @param target The required minimum capacity.
+ * @return The smallest integer k such that 2^k >= target, or 0 if target <= 1.
  */
-static int expand_bitmask(int count_subnets);
+static int get_min_power_of_two(int target);
 
 int subnetting_start(ipv4_t *ip, const char *ip_str, int *arr, size_t len)
 {
@@ -54,7 +54,7 @@ int subnetting_start(ipv4_t *ip, const char *ip_str, int *arr, size_t len)
 
 	if (!fill_addr(ip, ip_str)) { goto handle_error; }
 	if (!fill_bitmask(ip, ip_str)) { goto handle_error; }
-    ip->bitmask += expand_bitmask(len);
+    ip->bitmask += get_min_power_of_two(len);
     if (32 - ip->bitmask < 1) { goto handle_error; } 
 	if (!fill_netmask(ip)) { goto handle_error; }
 	if (!fill_wildcard(ip)) { goto handle_error; }
@@ -107,20 +107,20 @@ static ipv4_t *switch_subnet(ipv4_t *ip)
     return ip;
 }
 
-static int expand_bitmask(int count_subnets)
+static int get_min_power_of_two(int target)
 {
     int res_exp = 1;
-    int pow;
+    int pow = 1;
 
-    if (count_subnets <= 1) { return 0; }
+    if (target <= 1) { return 0; }
 
-    for (pow = 1; pow < count_subnets; pow++) {
+    for (; pow < target; pow++) {
         res_exp = 1;
         for (int iter = pow; iter > 0; iter--) {
             res_exp *= 2;
         }
 
-        if (res_exp >= count_subnets) { break; }
+        if (res_exp >= target) { break; }
     }
 
     return pow;
