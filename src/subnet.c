@@ -229,11 +229,7 @@ static int get_min_power_of_two(int target)
     if (target <= 1) { return 0; }
 
     for (; pow < target; pow++) {
-        res_exp = 1;
-        for (int iter = pow; iter > 0; iter--) {
-            res_exp *= 2;
-        }
-
+        res_exp = 1 << pow;
         if (res_exp >= target) { break; }
     }
 
